@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html> 
+<html> 
+<head> 
+<meta charset="gb2312" /> 
+
+<title>家教招募</title>
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'login/layout.css' %}" />
+<link rel="stylesheet" href="{% static 'login/nav.css' %}" />
+<link rel="stylesheet" href="{% static 'login/employ.css' %}" />
+<style type="text/css">
+td{
+	background-color:#33ff66;
+	height:35px;
+}
+</style>
+</head> 
+<body>
+<div id = "Container">
+<div id = "Logo"><center><font size="8" color="black">家教辅助系统</center></font></center>
+<div class = "logininfo">欢迎您，{{username}}!
+<a href = "../logout">退出</a></div>
+</div>
+</div>
+<div id = "Nav"> 
+<ul>
+<li><a href="../index_parent">我的主页</a></li> 
+<li><a href="../myinfo_parent">个人信息</a></li> 
+<li><a href="../search_tutor">家教查询</a></li> 
+<li><a href="../employ_tutor">家教招募</a></li> 
+<li><a href="../message_parent">我的留言</a></li>
+<li><a href="../comment_parent">我的评论</a></li>
+</ul> 
+</div>
+<div id = "Content_employ_tutor">
+<div align="center">
+<form method = "post">
+  <table width="717" border="2" bordercolor="#A7C0DC"  bgcolor="#CCCC33">
+
+    <tr>
+      <td width="150" rowspan="5" align="center" ><strong> 学员基本信息</strong></td>
+      <td><strong> 性别: 
+        <label>
+        <input name = "gender1" type = "radio" value = "M">
+        男</label>
+					   <label>
+					   <input name = "gender1" type = "radio" value = "F">
+					   女</label>
+            </strong></td>
+    </tr>
+    <tr>
+      <td><strong>年龄: 
+        <label>
+        <input name = "age" type = "radio" value = "0">
+        5岁以下</label>
+					  <label>
+					  <input name = "age" type = "radio" value = "1">
+					  5至12岁</label>
+					  <label>
+					  <input name = "age" type = "radio" value = "2">
+					  12至15岁</label>
+					  <label>
+					  <input name = "age" type = "radio" value = "3">
+					  16岁以上</label>
+            </strong></td>
+    </tr>
+    <tr>
+      <td><strong>年级: 
+        <label>
+        <input name = "grade" type = "radio" value = "Primary">
+        小学</label>
+					  <label>
+					  <input name = "grade" type = "radio" value = "J1">
+					  初一</label>
+					  <label>
+					  <input name = "grade" type = "radio" value = "J2">
+					  初二</label>
+					  <label>
+					  <input name = "grade" type = "radio" value = "J3">
+					  初三</label>
+					  <label>
+					  <input name = "grade" type = "radio" value = "H1">
+					  高一</label>
+					  <label>
+					  <input name = "grade" type = "radio" value = "H2">
+					  高二</label>
+					  <label>
+					  <input name = "grade" type = "radio" value = "H3">
+					  高三</label>
+            </strong></td>
+    </tr>
+    <tr>
+      <td><strong>科目: 
+        <label>
+        <input name="subject" type="checkbox" value="Math" />
+        数学</label> 
+					 <label>
+					 <input name="subject" type="checkbox" value="Chinese" />
+					 语文</label> 
+					 <label>
+					 <input name="subject" type="checkbox" value="English" />
+					 英语</label> 
+					 <label>
+					 <input name="subject" type="checkbox" value="Physic" />
+					 物理</label>
+					 <label>
+					 <input name="subject" type="checkbox" value="Chemistry" />
+					 化学</label>
+				   	 <label>
+				   	 <input name="subject" type="checkbox" value="Biology" />
+				   	 生物</label>
+            </strong></td>
+    </tr>
+    <tr>
+      <td><strong>基本描述: 
+        <input type = "text" name = "info1" style = "width:400px" maxlength = "30" placeholder = "请不要超过30个字">
+      </strong></td>
+    </tr>
+    <tr>
+      <td rowspan="2" align="center"><strong>家教基本要求</strong></td>
+      <td><strong>性别: <label>
+        <input name = "gender2" type = "radio" value = "M">
+        男</label>
+					   <label>
+					   <input name = "gender2" type = "radio" value = "F">
+					   女</label><label>
+					   <input name = "gender2" type = "radio" value = "N">
+					   男女不限</label></strong></td>
+    </tr>
+    
+    <tr>
+      <td><strong>其他要求:
+						<input type = "text"  name = "info2" style = "width:400px" maxlength = "30" placeholder = "请不要超过30个字">
+	  </strong></td>
+    </tr>
+    <tr>
+      <td rowspan="7" align="center"><strong>其他</strong></td>
+      <td><strong>上课方式: <label>
+					  <input name = "way" type = "radio" value = "S">
+					  学生上门</label>
+					  <label>
+					  <input name = "way" type = "radio" value = "T">
+					  家教上门</label></strong></td>
+    </tr>
+    <tr>
+      <td><strong>上课地点:
+	  <input type = "text" name = "site" style = "width:400px" maxlength = "30" placeholder = "请不要超过30个字">
+	  </strong></td>
+    </tr>
+    <tr>
+      <td><strong>上课时间:
+	  <input type = "text" name = "time" style = "width:400px" maxlength = "30" placeholder = "请不要超过30个字">
+	  </strong></td>
+    </tr>
+    <tr>
+      <td><strong>薪 酬:
+	  <input type = "text"  name = "salary" style = "width:400px" maxlength = "30" placeholder = "请不要超过30个字"></strong></td>
+    </tr>
+    <tr>
+      <td><strong>联系人:  <input type = "text" name = "linkman" style = "width:80px" maxlength = "15" placeholder = '如"王女士"'></strong></td>
+    </tr>
+    <tr>
+      <td><strong>联系电话:
+	  <input type = "text" name = "phone" style = "width:100px" maxlength = "11" placeholder = "可不填">
+	  </strong></td>
+    </tr>
+    <tr>
+      <td><strong>备注: 
+	  <input type = "text" name = "info3" style = "width:400px" maxlength = "30" placeholder = "请不要超过30个字">
+	  </strong></td>
+    </tr>
+  </table>
+  <input type = "submit" value ="发布">
+  </form>
+</div>
+</div>
+
+</body>
+</html>

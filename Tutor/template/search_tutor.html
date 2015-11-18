@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html> 
+<html> 
+<head> 
+<meta charset="utf-8" /> 
+
+<title>查询家教</title>
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'login/layout.css' %}" />
+<link rel="stylesheet" href="{% static 'login/nav.css' %}" />
+<link rel="stylesheet" href="{% static 'login/search_tutor.css' %}" />
+</head> 
+<body>
+<div id = "Container">
+<div id = "Logo"><center><font size="8" color="black">家教辅助系统</center></font></center>
+<div class = "logininfo">欢迎您，{{username}}!
+<a href = "../logout">退出</a></div>
+</div>
+</div>
+<div id = "Nav"> 
+<ul>
+<li><a href="../index_parent">我的主页</a></li> 
+<li><a href="../myinfo_parent">个人信息</a></li> 
+<li><a href="../search_tutor">家教查询</a></li> 
+<li><a href="../employ_tutor">家教招募</a></li> 
+<li><a href="../message_parent">我的留言</a></li>
+<li><a href="../comment_parent">我的评论</a></li>
+</ul> 
+</div>
+<div id = "Content_search_tutor">   
+<div id = "Content_search_tutor_select">
+<form action="" method="POST" class = "left">
+筛选>><br />
+年级:
+<label><input name="grade" type="radio" value="Primary" />小学 </label> 
+<label><input name="grade" type="radio" value="J1" />初一 </label>
+<label><input name="grade" type="radio" value="J2" />初二 </label>
+<label><input name="grade" type="radio" value="J3" />初三 </label>
+<label><input name="grade" type="radio" value="H1" />高一 </label>
+<label><input name="grade" type="radio" value="H2" />高二 </label>
+<label><input name="grade" type="radio" value="H3" />高三 </label>
+<br />
+学科:
+<label><input name="subject" type="radio" value="Math" />数学 </label> 
+<label><input name="subject" type="radio" value="Chinese" />语文 </label> 
+<label><input name="subject" type="radio" value="English" />英语 </label> 
+<label><input name="subject" type="radio" value="Physic" />物理</label>
+<label><input name="subject" type="radio" value="Chemistry" />化学</label>
+<label><input name="subject" type="radio" value="Biology" />生物</label><br />
+性别:
+<label><input name="gender" type="radio" value="M" />男</label>
+<label><input name="gender" type="radio" value="F" />女</label>
+<label><input name="gender" type="radio" value="N" />男女不限</label><br /><br />
+<input type="submit" value="筛选">
+</form> 
+</div>
+<div id = "Content_search_tutor_input">
+
+<form method="get" class = "right">
+    <input type="text" name="q">
+	<select name="select"> 
+	<option value="0">按账号</option> 
+	<option value="1">按姓名</option>
+	<option value="2">按大学</option>
+	<option value="3">按编号</option>	
+	</select> 
+    <input type="submit" value="查询">
+</form>
+</div>
+<div id = "Content_search_tutor_result">
+{% if error %}
+	<ul>
+		
+		<li>{{ error }}</li>
+
+	</ul>
+{% endif %}
+{% if sucess  %}
+<p>为您找到以下结果:</p>
+<center>
+<table class="gridtable">
+<tr>
+	<th>账号</th><th>编 号</th><th>姓 名</th><th>邮 箱</th><th>性 别</th><th>年 龄</th><th>大 学</th><th>Q Q</th><th>状态</th><th>详细信息</th>
+</tr>
+{% for tutor in tutors %}
+{% ifequal tutor.state "F" %}
+	{% ifequal tutor.gender "F"%}
+		<tr>
+		<td>{{tutor.username}}</td><td>{{tutor.userid}}</td><td>{{tutor.realname}}</td><td>{{tutor.email}}</td><td>女</td><td>{{tutor.age}}</td>
+		<td>{{tutor.university}}</td><td>{{tutor.qq}}</td><td><font color = "green">空闲</font></td><td><a href = "/tutor/{{tutor.username}}/">详细信息</a></td>
+		</tr>
+	{% else %}
+		<tr>
+		<td>{{tutor.username}}</td><td>{{tutor.userid}}</td><td>{{tutor.realname}}</td><td>{{tutor.email}}</td><td>男</td><td>{{tutor.age}}</td>
+		<td>{{tutor.university}}</td><td>{{tutor.qq}}</td><td><font color = "green">空闲</font></td><td><a href = "/tutor/{{tutor.username}}/">详细信息</a></td>
+		</tr>
+	{% endifequal %}
+{% else %}
+	{% ifequal tutor.gender "F"%}
+		<tr>
+		<td>{{tutor.username}}</td><td>{{tutor.userid}}</td><td>{{tutor.realname}}</td><td>{{tutor.email}}</td><td>女</td><td>{{tutor.age}}</td>
+		<td>{{tutor.university}}</td><td>{{tutor.qq}}</td><td><font color = "red">忙碌</font></td><td><a href = "/tutor/{{tutor.username}}/">详细信息</a></td>
+		</tr>
+	{% else %}
+		<tr>
+		<td>{{tutor.username}}</td><td>{{tutor.userid}}</td><td>{{tutor.realname}}</td><td>{{tutor.email}}</td><td>男</td><td>{{tutor.age}}</td>
+		<td>{{tutor.university}}</td><td>{{tutor.qq}}</td><td><font color = "red">忙碌</font></td><td><a href = "/tutor/{{tutor.username}}/">详细信息</a></td>
+		</tr>
+	{% endifequal %}
+{% endifequal %}
+{% endfor %}
+</table>
+</center>
+{% endif %}	
+</div>
+</div>
+</body>
+</html>

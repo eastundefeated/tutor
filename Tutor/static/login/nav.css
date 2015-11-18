@@ -1,0 +1,35 @@
+body,ul,li{
+padding:0;
+margin:0;
+}
+
+#Nav ul{
+height:60px;
+}
+
+#Nav ul li{
+line-height:60px;
+letter-spacing:5px;
+float:left;
+list-style:none;
+padding:0 10px;
+}
+
+#Nav ul li a{
+display:block;
+height:60px;
+color:#fff;
+text-decoration:none;
+float:left;
+padding:0 10px;
+font-size:26px;;
+font-family:simsun;
+font-weight:bold;
+}
+
+#Nav ul li a:hover{
+height:60px;
+text-shadow: 0 1px #101010;
+color:#000;
+background:#0FF;
+}

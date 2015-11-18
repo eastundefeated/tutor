@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html> 
+<html> 
+<head> 
+<meta charset="gb2312" /> 
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">   
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-store, must-revalidate">   
+<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">   
+<META HTTP-EQUIV="expires" CONTENT="0">   
+<title>个人主页</title>
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'login/layout.css' %}" />
+<link rel="stylesheet" href="{% static 'login/nav.css' %}" />
+</head> 
+<body>
+<div id = "Container">
+<div id = "Logo"><center><font size="8" color="black">家教辅助系统</center></font></center>
+<div class = "logininfo">欢迎您，{{username}}!
+<a href = "../logout">退出</a></div>
+</div>
+</div>
+<div id = "Nav"> 
+<ul>
+<li><a href="../index_tutor">我的主页</a></li> 
+<li><a href="../myinfo_tutor">个人信息</a></li> 
+<li><a href="../search_job">寻求工作</a></li> 
+<li><a href="../message_tutor">我的留言</a></li>
+<li><a href="../comment_tutor">我的评论</a></li>
+</ul> 
+</div>
+<div id = "Content">
+<div id = "Content-Main">
+<div id = "Content-Main1">今日最热</div>
+<div id = "Content-Main1">我最关心</div>
+<div id = "Content-Main1">自动推荐</div>
+</div>
+<div id = "Content-Left">CONTENT-LEFT</div>
+<div class = "Clear"></div>
+<div id = "Footer">FOOTER</div>
+</div>
+</body> 
+</html> 

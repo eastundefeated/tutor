@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html> 
+<html> 
+<head> 
+<meta charset="gb2312" /> 
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">   
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-store, must-revalidate">   
+<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">   
+<META HTTP-EQUIV="expires" CONTENT="0">   
+<title>个人主页</title>
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'login/layout.css' %}" />
+<link rel="stylesheet" href="{% static 'login/nav.css' %}" />
+<style type="text/css">
+#comments,#messages{
+height: 50%;
+width: 90%;
+border-radius: 15px;
+}
+div.comment, .message{
+width: 90%;
+border-radius: 15px;
+height:80px;
+border: 2px solid #4e72b8;
+background:#66CC33;
+}
+</style>
+</head> 
+<body>
+<div id = "Container">
+<div id = "Logo"><center><font size="8" color="black">家教辅助系统</center></font></center>
+<div class = "logininfo">{{parent.username}}的个人主页!
+<form method="post">{%csrf_token%}<button name="logout">退出</button></div>
+</div>
+</div>
+<div id = "Nav"> 
+<ul>
+<li><a href="../index_parent">我的主页</a></li> 
+<li><a href="../myinfo_parent">个人信息</a></li> 
+<li><a href="../search_tutor">家教查询</a></li> 
+<li><a href="../employ_tutor">家教招募</a></li> 
+<li><a href="../message_parent">我的留言</a></li>
+<li><a href="../commit_parent">我的评论</a></li>
+</ul> 
+</div>
+<div id = "Content">
+<div id = "Content-Main">
+<div id = "Content-Main1">今日最热</div>
+<div id = "Content-Main1">我最关心</div>
+<div id = "Content-Main1">自动推荐</div>
+</div>
+<div id = "Content-Left">CONTENT-LEFT
+<div id="comments">
+{%if comments %}
+<h1>最新评论</h1>
+{% for comment in comments%}
+<div  class="comment">
+{{comment.content}}
+</div>
+{%endfor%}
+{%else%}
+暂无评论
+{%endif%}
+</div>
+<div id="messages">
+{%if messages %}
+<h1>最新留言</h1>
+<ul>
+{% for message in messages%}
+<div id="message">
+{{message.content}}
+</div>
+{%endfor%}
+</ul>
+{%else%}
+暂无留言
+{%endif%}
+</div>
+</div>
+<div class = "Clear"></div>
+<div id = "Footer">FOOTER</div>
+</div>
+</body> 
+</html> 

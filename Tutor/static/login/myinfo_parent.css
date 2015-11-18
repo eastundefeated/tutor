@@ -1,0 +1,38 @@
+h1{
+    font-size:30px;
+    text-align:center
+}
+
+legend{
+    font-size:30px;
+    text-align:center;
+}
+input{
+    font-size:18px;
+    font-family:"??";
+    //boder:10px inset #00008B;
+    //background-color:#ABCDEF;
+}
+.aline{
+    width:150px;
+    float:left;
+    clear:both;
+    font-family:"ËÎÌו",Arial;
+    font-size:20px;
+    text-align:left;
+    //text-indent:4em;
+    letter-spacing:20px;
+
+}
+.left{
+    float:left;
+    margin-left:25px;
+    height: 35px;
+    width: 80px;
+}
+.right{
+    float:right;
+    margin-right:18px;
+    height: 35px;
+    width: 80px;
+}

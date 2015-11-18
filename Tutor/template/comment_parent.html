@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html> 
+<html> 
+<head> 
+<meta charset="gb2312" /> 
+
+<title>我的评论</title>
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'login/layout.css' %}" />
+<link rel="stylesheet" href="{% static 'login/nav.css' %}" />
+<link rel="stylesheet" href="{% static 'login/message.css' %}" />
+</head> 
+<body>
+<div id = "Container">
+<div id = "Logo"><center><font size="8" color="black">家教辅助系统</center></font></center>
+<div class = "logininfo">欢迎您，{{username}}!
+<a href = "../logout">退出</a></div>
+</div>
+</div>
+<div id = "Nav"> 
+<ul>
+<li><a href="../index_parent">我的主页</a></li> 
+<li><a href="../myinfo_parent">个人信息</a></li> 
+<li><a href="../search_tutor">家教查询</a></li> 
+<li><a href="../employ_tutor">家教招募</a></li> 
+<li><a href="../message_parent">我的留言</a></li>
+<li><a href="../comment_parent">我的评论</a></li>
+</ul> 
+</div>
+<div id = "Content_message_parent">
+<div id = "Content_message_parent_left">
+<h2>谁评论过我</h2>
+<hr color = "red">
+{% if TPComment %}
+<h4>{% for comment in TPComment %}
+<div class = "message">
+<ul>
+form <a href = "/tutor/{{comment.from_user}}/">{{comment.from_user}}</a>
+<li>{{comment.content}}</li>   
+<h5>发表日期:{{comment.pub_date}}</h5> <!--<button name = "deletetp" value = "">删除</button><br /></h4>-->
+</ul>
+</div>
+{% endfor %}
+{% endif %}
+{% if not TPComment %}
+<center>
+<h1>暂无评论</h1>
+</center>
+{% endif %}
+</div>
+
+<div id = "Content_message_parent_right">
+<h2>我评论过谁</h2>
+<hr color = "blue">
+{% if PTComment %}
+<h4>{% for comment in PTComment %}
+<div class = "message">
+<ul>
+to <a href = "/tutor/{{comment.to_user}}/">{{comment.to_user}}</a>
+<li>{{comment.content}}</li>   <h5>发表日期:{{comment.pub_date}}</h5> <!--<button name = "deletept" value = "">删除</button>-->
+</ul>
+</div>
+{% endfor %}
+</h4>
+{% endif %}
+{% if not PTComment%}
+<center>
+<h1>未曾评论</h1>
+</center>
+{% endif %}
+</div>
+</div>
+
+</body>
+</html>

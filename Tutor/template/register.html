@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Register Form</title>
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'login/style.css' %}" />
+</head>
+<body>
+  <section class="container">
+    <div class="login">
+      <h1><center>用户注册</center></h1>
+
+	{% if errors %}
+	<ul>
+		{% for error in errors %}
+		<font color = "red"><li>{{ error }}</li></font>
+		{% endfor %}
+	</ul>
+    {% endif %}
+
+	<form method="post">
+	<!--
+        <p><input type="text" name="username" value="" placeholder="用户名"></p>
+        <p><input type="password" name="password1" value="" placeholder="密码"></p>
+		<p><input type="password" name="password2" value="" placeholder="重复密码"></p>
+		<p><input type="text" name="email" value="" placeholder="邮箱"></p>-->
+		{{form.username}}
+		{{form.password}}
+		{{form.password_confirm}}
+		{{form.email}}
+		{{form.gender}}
+		<p>
+		<select name = "identity"> 
+		<option value="parent">家长</option> 
+		<option value="tutor">家教</option> 
+		</select> 
+		</p>
+<p class="remember_me"></p>
+        <p class="submit"><input type="submit" name="commit" value="确定"></p>
+        <p class="submit"><input type="reset"  value="重置"></p>
+      </form>
+    </div>
+    <div class="login-help">
+    </div>
+  </section>
+<div style="text-align:center;">
+</div>
+</body>
+</html>
