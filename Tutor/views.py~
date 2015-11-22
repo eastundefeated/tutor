@@ -102,7 +102,7 @@ def index(request):
     	return render_to_response('pindex.html' ,{'username':username})
     else:
 	username = Tutor.objects.get(userid = userid).username
-        return render(request,'indext.html' ,{'username':username})
+        return render_to_response('indext.html' ,{'username':username})
 @csrf_exempt
 @login_required
 def myinfo(request):

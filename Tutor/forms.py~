@@ -49,12 +49,12 @@ class BaseCreateForm(forms.Form):
             )
         return password2
 
-class CreateParent(BaseCreateForm,forms.ModelForm):
+class CreateParent(BaseCreateForm):
     class Meta:
         model = Parent
         fields = ["username", "password", "password_confirm", "gender", "email"]
 
-class CreateTutor(BaseCreateForm,forms.ModelForm):
+class CreateTutor(BaseCreateForm):
     class Meta:
         model = Tutor
         fields = ["username", "password", "password_confirm", "gender", "email"]

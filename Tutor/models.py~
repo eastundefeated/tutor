@@ -62,7 +62,7 @@ class Tutor(BaseProfile):
     major = models.CharField(verbose_name="专业", max_length=40, blank=True)
     subject = models.ManyToManyField(Subject, blank=True)
 class Parent(BaseProfile):
-    address = models.TextField(verbose_name="地址",blank=True)
+    address = models.CharField(verbose_name="地址", max_length=80, blank=True)
 class BaseMessage(models.Model):
     ID = models.AutoField(primary_key=True)
     content = models.TextField(blank=True)

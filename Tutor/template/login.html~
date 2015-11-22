@@ -4,16 +4,17 @@
   <title>Login Form</title>
 {% load staticfiles %}
 <link rel="stylesheet" href="{% static 'login/style.css' %}" />
-<style type="text/css">
-li.success{color:green;font-size:15px;}
-li.warning{color:yellow;font-size:15px;}
-li.error{color:red;font-size:15px;}
-</style>
 </head>
 <body>
   <section class="container">
     <div class="login">
       <h1><center>用户登录</center></h1>
+<!--
+	<ul>
+		<font color = "red" size = "4"><li>{{errors.username}}{{form.username.errors}}</li></font>
+		<font color = "red" size = "4"><li>{{errors.password}}{{form.password.errors}}</li></font>
+	</ul>
+-->
         {% if messages %}
 	<ul class="messages">
     	{% for message in messages %}

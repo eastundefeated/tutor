@@ -1,0 +1,113 @@
+<html>
+<head>
+<meta charset="utf-8"/>
+{% load staticfiles %}
+<title>{%block title%}个人主页{%endblock%}</title>
+<style type="text/css">
+#page{
+ margin:0 auto;
+ width:100%;
+}
+div{
+  margin:0,auto;
+}
+#header{
+  background:#DDDDDD;
+  width:auto;
+  height:15%;
+}
+#container{
+  border-radius:5px;
+  width:100%;
+  height:auto;
+}
+#footer{
+  background:#C0C0C0;
+  width:auto;
+  height:3%;
+  clear:both;
+}li.titleline{
+ float:left;
+ margin-left:30px;
+ margin-top:55px;
+ list-style:none;
+ font-size:25px;
+ line-height:100%;
+ text-align:center
+ font-family:"Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+ margin-right:30px;
+}#photo{
+ margin-right:10px;
+ margin-left:250px;
+ margin-top:20px;
+ width:50px;
+ height:50px;
+ border-radius:50px;
+}
+#logout{
+ margin-top:2.5%;
+ margin-right:20px;
+ float:right;
+}
+a.titleline:link,a.titleline:hover,a.titleline:visited{
+ text-decoration:none;
+ color:black;
+}
+a.titleline:hover{
+ background:#999999;
+}
+#left{
+ border-radius:5px;
+ float:left;
+ width:18%;
+ height:100%;
+ background:#9999FF;
+}
+#center{
+ border-radius:5px;
+ float:left;
+ width:62%;
+ height:100%;
+ background:#DCDCDC;
+}
+#right{
+ border-radius:5px;
+ float:right;
+ width:20%;
+ height:100%;
+ background:#C9C9C9;
+}li.success{color:green;font-size:15px;}
+li.warning{color:yellow;font-size:15px;}
+li.error{color:red;font-size:15px;}
+ {%block style%}
+ {%endblock%}
+</style>
+</head>
+<body id="page">
+<div id="header">
+<ul>
+<li class="titleline"><a class="titleline" href="/index">我的主页</a></li>
+<li class="titleline"><a class="titleline" href="/search">家教搜索</a></li>
+<li class="titleline"><a class="titleline" href="/publishform/">招募启示</a></li>
+<li class="titleline"><a class="titleline" href="/share/">经历分享</a></li>
+<li class="titleline"><a class="titleline" href="/message/">留言板</a></li>
+</ul>
+<a href="/index/"><img id="photo" src={% static 'photo.png' %}  alt="用户图像" /></a>
+<a href="/logout/"><button id="logout" name="logout">退出</button></a>
+</div>
+<div id="container">
+{% if messages %}
+	<ul class="messages">
+    	{% for message in messages %}
+    	<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    	{% endfor %}
+	</ul>
+{% endif %}
+<div id="left">{%block left%}{%endblock%}</div>
+<div id="center">{%block center%}{%endblock%}</div>
+<div id="right">{%block right%}{%endblock%}</div>
+</div>
+<div id="footer"></div>
+</body>
+</html>
+
