@@ -9,7 +9,7 @@
  width:100%;
 }
 div{
-  margin:0,auto;
+ margin:0 auto;
 }
 #header{
   background:#DDDDDD;
@@ -92,7 +92,7 @@ li.error{color:red;font-size:15px;}
 <li class="titleline"><a class="titleline" href="/share/">经历分享</a></li>
 <li class="titleline"><a class="titleline" href="/message/">留言板</a></li>
 </ul>
-<a href="/index/"><img id="photo" src={% static 'photo.png' %}  alt="用户图像" /></a>
+<a href="/index/"><img id="photo" src="./Tutor/static/image/p{{user.userid}}.png"  alt="用户图像" /></a>
 <a href="/logout/"><button id="logout" name="logout">退出</button></a>
 </div>
 <div id="container">

@@ -4,9 +4,9 @@ from django.http import HttpResponse,HttpResponseRedirect
 from models import *
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
-#from forms import LoginForm,RegisterForm,parent_form
 from forms import *
 from django.db.models import Q
+from PIL import Image
 def redirect_to_index(fn):
     def login_check(request,*args):
         if 'userid' in request.session:
@@ -98,11 +98,13 @@ def logout(request):
 def index(request):	
     userid = request.session["userid"]
     if request.session['identity'] == 'p':
-    	username = Parent.objects.get(userid = userid).username
-    	return render_to_response('pindex.html' ,{'username':username})
+ 	user = Parent.objects.get(userid = userid)
+    	username = user.username
+    	return render_to_response('pindex.html' ,locals())
     else:
-	username = Tutor.objects.get(userid = userid).username
-        return render_to_response('indext.html' ,{'username':username})
+	user = Tutor.objects.get(userid = userid)
+	username = user.username
+        return render(request,'tindex.html' ,locals())
 @csrf_exempt
 @login_required
 def myinfo(request):
@@ -117,8 +119,29 @@ def myinfo(request):
     	else:
             form = ParentForm(instance=user)
         return render_to_response('pinfo.html',locals())
-
-
+    else:
+	user = Tutor.objects.get(userid=userid)
+    	if request.method=="POST":
+            form = TutorForm(request.POST,instance=user)
+            if form.is_valid() and form.has_changed():
+               form.save()
+    	else:
+            form = TutorForm(instance=user)
+        return render_to_response('tinfo.html',locals())
+@csrf_exempt
+@login_required
+def uploadimage(request):
+    userid = request.session["userid"]
+    identity = request.session['identity']
+    if request.method == 'POST':       
+        if 'image' in request.FILES:
+            image=request.FILES["image"]
+            img=Image.open(image)
+            img.thumbnail((112,54),Image.ANTIALIAS)
+            name='/Tutor/static/image/'+str(identity)+str(userid)+'.png'
+            img.save(name,"png")
+            return HttpResponseRedirect("/index/")
+    return render_to_response('image.html')
 @csrf_exempt
 @login_required
 def search_tutor(request):

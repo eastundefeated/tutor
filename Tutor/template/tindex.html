@@ -1,10 +1,10 @@
-{%extends "pbase.html"%}
+{% extends "tbase.html"%}
 {% load staticfiles %}
 {%block title%}个人主页{%endblock%}
 {%block style%}
 #userphoto{
- width:200px;
- height:180px;
+ width:90%;
+ height:40%;
  margin-top:10%;
  margin-left:5%;
 }
@@ -55,15 +55,15 @@ div.message,div.comment{
 }
 {%endblock%}
 {%block left%}
-<img id="userphoto" src="/static/image/p{{userid}}.png" alt="用户头像"/> 
+<img id="userphoto" src="/static/image/t{{userid}}.png" alt="用户头像"/> 
 <h2 id="username"><strong style="color:green;">{{username}}</strong>的个人信息</h2>
 <ul>
 <li class="info">姓名:{{user.realname}} </li>
 <li class="info">年龄：{%if user.age%}{{user.age}}{%endif%}</li>
-<li class="info">性别: {%ifequal user.gender 'M'%}男{%else%}女{%endifequal%}</li>
+<li class="info">性别: {%ifequal user.gender 'M' %}男{%else%}女{%endifequal%}</li>
 <li class="info">qq:{{user.qq}}</li>
 </ul>
-<a id="info" href="/info/">点此修改或完善资料</a>
+<a id="info" href="/info">点此修改或完善资料</a>
 {%endblock%}
 {%block center%}
 <div id="message">
@@ -74,7 +74,7 @@ div.message,div.comment{
 <h5 class="time">甲轩&nbsp&nbsp&nbsp2015-8-17 17:30:20</h5>
 </div>
 <div class="message">
-<img src="{% static 'photo.png' %}"/>
+<img src="photo.png"/>
 <p>您好，我是xxx大学的xxx，我希望能和您商谈家教事宜</p>
 <h5 class="time">良又&nbsp&nbsp&nbsp2015-8-16 14:21:15</h5>
 </div>
@@ -82,12 +82,12 @@ div.message,div.comment{
 <div id="comment">
 <h2>最新评论</h2>
 <div class="comment">
-<img src="{% static 'photo.png' %}"/>
+<img src="photo.png"/>
 <p>家长很和蔼，薪酬很丰厚</p>
 <h5 class="time">仇人九&nbsp&nbsp&nbsp2015-8-17 16:09:34</h5>
 </div>
 <div class="commment">
-<img src="{% static 'photo.png' %}"/>
+<img src="photo.png"/>
 <p>女儿太娇惯了，不好教</p>
 <h5 class="time">黑肱大师&nbsp&nbsp&nbsp2013-7-8 19:13:19</h5>
 </div>

@@ -1,0 +1,16 @@
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+<h1><center>上传图片</center></h1>
+form enctype="multipart/form-data" method="post">
+	{% csrf_token %}
+	<fieldset>
+	<legend>上传图片</legend>
+	<input type="file" name = "image"/>
+	</fieldset>
+<input value="提交" type="submit"/>
+  </form>
+</body>
+</html>

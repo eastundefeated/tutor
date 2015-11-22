@@ -1,4 +1,4 @@
-{%extends "tbase.html"%}
+{%extends "pbase.html"%}
 {% load staticfiles %}
 {%block title%}个人主页{%endblock%}
 {%block style%}

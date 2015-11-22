@@ -1,4 +1,4 @@
-{%extends "tbase.html"%}
+{% extends "tbase.html"%}
 {% load staticfiles %}
 {%block title%}个人主页{%endblock%}
 {%block style%}
@@ -55,13 +55,13 @@ div.message,div.comment{
 }
 {%endblock%}
 {%block left%}
-<img id="userphoto" src="{% static 'myphoto.jpg' %}" alt="用户头像"/> 
+<img id="userphoto" src="./Tutor/static/image/t{{userid}}.png" alt="用户头像"/> 
 <h2 id="username"><strong style="color:green;">{{username}}</strong>的个人信息</h2>
 <ul>
-<li class="info">姓名: </li>
-<li class="info">年龄：40</li>
-<li class="info">性别: 男</li>
-<li class="info">qq: 1314534</li>
+<li class="info">姓名:{{user.realname}} </li>
+<li class="info">年龄：{%if user.age%}{{user.age}}{%endif%}</li>
+<li class="info">性别: {%ifequal user.gender 'M' %}男{%else%}女{%endifequal%}</li>
+<li class="info">qq:{{user.qq}}</li>
 </ul>
 <a id="info" href="/info">点此修改或完善资料</a>
 {%endblock%}

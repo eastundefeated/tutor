@@ -67,7 +67,7 @@ a.titleline:hover{
  border-radius:5px;
  float:left;
  width:62%;
- height:100%;
+ height:auto;
  background:#DCDCDC;
 }
 #right{
@@ -76,9 +76,7 @@ a.titleline:hover{
  width:20%;
  height:100%;
  background:#C9C9C9;
-}li.success{color:green;font-size:15px;}
-li.warning{color:yellow;font-size:15px;}
-li.error{color:red;font-size:15px;}
+}
  {%block style%}
  {%endblock%}
 </style>
@@ -87,22 +85,14 @@ li.error{color:red;font-size:15px;}
 <div id="header">
 <ul>
 <li class="titleline"><a class="titleline" href="/index">我的主页</a></li>
-<li class="titleline"><a class="titleline" href="/search">家教搜索</a></li>
-<li class="titleline"><a class="titleline" href="/publishform/">招募启示</a></li>
+<li class="titleline"><a class="titleline" href="/search">表单搜索</a></li>
 <li class="titleline"><a class="titleline" href="/share/">经历分享</a></li>
 <li class="titleline"><a class="titleline" href="/message/">留言板</a></li>
 </ul>
-<a href="/index/"><img id="photo" src="/static/image/p{{user.userid}}.png"  alt="用户图像" /></a>
-<a href="/logout/"><button id="logout" name="logout">退出</button></a>
+<a href="/index/"><img id="photo" src="/static/image/t{{user.userid}}.png"  alt="用户图像" /></a>
+<a href="/logout/"><button id="logout" name="loggout">退出</button></a>
 </div>
 <div id="container">
-{% if messages %}
-	<ul class="messages">
-    	{% for message in messages %}
-    	<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    	{% endfor %}
-	</ul>
-{% endif %}
 <div id="left">{%block left%}{%endblock%}</div>
 <div id="center">{%block center%}{%endblock%}</div>
 <div id="right">{%block right%}{%endblock%}</div>

@@ -8,5 +8,6 @@ urlpatterns = [
     url(r'^register/$',register),
     url(r'^index/$',index),
     url(r'^info/$',myinfo),
+    url(r'^upload/$',uploadimage),
     url(r'^admin/',include(admin.site.urls)),
 ]   

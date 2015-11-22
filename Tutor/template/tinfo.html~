@@ -1,4 +1,4 @@
-{%extends "pbase.html"%}
+{%extends "tbase.html"%}
 {% load staticfiles %}
 {%block title%}个人资料{%endblock%}
 {%block style%}
@@ -66,16 +66,19 @@
 <li class="li_info">邮箱:&nbsp;&nbsp;{{form.email}}<strong style="color:red;">必填</strong></li>
 </ul>
 </td><td id="im_td">
-<img id="userphoto" src="/static/image/p{{userid}}.png" alt="暂无用户图像"/>
+<img id="userphoto" src="/static/t{{userid}}.png" alt="暂无用户图像"/>
 <br>
 <a id="upload" href="/upload/">点此上传图片</a>
 </td>
 </tr>
 </table>
 <ul id="restinfo">
+<li class="li_info">大学:&nbsp;&nbsp;{{form.university}}</li>
+<li class="li_info">状态:&nbsp;&nbsp;{{form.state}}</li>
+<li class="li_info">专业:&nbsp;&nbsp;{{form.major}}</li>
+<li class="li_info">科目:&nbsp;&nbsp;{{form.subject}}<a href="/addsubject/">点此添加科目</a></li>
 <li class="li_info">电话:&nbsp;&nbsp;{{form.phone}}</li>
 <li class="li_info">QQ:&nbsp;&nbsp;&nbsp;&nbsp;{{form.qq}}</li>
-<li class="li_info">地址:&nbsp;&nbsp;<textarea cols="40" id="id_address" placeholder="地址..." name="address" rows="2"></textarea></li>
 <li class="li_info">PS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<textarea cols="40" id="id_information" placeholder="其他信息..." name="information" rows="2">
 </textarea></li>
 <li id="subset">

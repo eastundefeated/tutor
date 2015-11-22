@@ -48,7 +48,7 @@
  border-radius:16px;
 }input[type=text],input[type=number]{
  background:#D0D0D0;
-}textareas{
+}textarea{
  background:#D0D0D0;
 }
 {%endblock%}
@@ -66,7 +66,7 @@
 <li class="li_info">邮箱:&nbsp;&nbsp;{{form.email}}<strong style="color:red;">必填</strong></li>
 </ul>
 </td><td id="im_td">
-<img id="userphoto" src="/static/{{userid}}.jpg" alt="暂无用户图像"/>
+<img id="userphoto" src="/static/image/p{{userid}}.png" alt="暂无用户图像"/>
 <br>
 <a id="upload" href="/upload/">点此上传图片</a>
 </td>
