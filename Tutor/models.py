@@ -2,33 +2,68 @@
 from django.db import models
 subject_choice = (('Math', '数学'),('Chinese', '语文'),("English", '英语'),
                     ('Physic', "物理"), ('Chemistry', '化学'), ('Biology', '生物'))
-grade_choice = (('小学', (('P1','小学一年级'),('P2','小学二年级'))), ('J1', '初一'), ('J2', '初二'), ('J3','初三'),
+dict_subject = {
+'Math':'数学','Chinese':'语文',"English":'英语','Physic':"物理",'Chemistry':'化学','Biology':'生物'
+}
+grade_choice = (('Pr','小学'), ('J1', '初一'), ('J2', '初二'), ('J3','初三'),
                     ('H1', '高一'), ('H2', '高二'), ('H3', '高三'))
+dict_grade = {
+'Pr':'小学','J1':"初一","J2":"初二","J3":"初三","H1":"高一","H2":"高二","H3":"高三"
+}
 age_choice = (('0','5岁以下'),('1','5岁至12岁'),('2','12至16岁'),('3','16岁以上'))
 gender_choice = (('M', '男'), ('F', '女'))
 state_choice = (('B', '忙碌'), ('F', '空闲'))
-university_choice = (("哈尔滨工业大学","哈尔滨工业大学"), ("哈尔滨工程大学","哈尔滨工程大学"),
-                    ("东北林业大学","东北林业大学"),
-                    ("黑龙江大学","黑龙江大学"),
-                    ("哈尔滨理工大学","哈尔滨理工大学"),
-                    ("东北农业大学","东北农业大学"),
-                    ("哈尔滨医科大学","哈尔滨医科大学"),
-                    ("黑龙江中医药大学","黑龙江中医药大学"),
-                    ("哈尔滨师范大学","哈尔滨师范大学"),
-                    ("哈尔滨商业大学","哈尔滨商业大学"),
-                    ("哈尔滨学院","哈尔滨学院"),
-                    ("黑龙江工程学院","黑龙江工程学院"),
-                    ("黑龙江科技学院","黑龙江科技学院"),
-                    ("哈尔滨德强商务学院","哈尔滨德强商务学院"),
-                    ("哈尔滨体育学院","哈尔滨体育学院"),
-                    ("黑龙江东方学院","黑龙江东方学院"),
+university_choice = (("001","哈尔滨工业大学"), ("002","哈尔滨工程大学"),
+                    ("003","东北林业大学"),
+                    ("004","黑龙江大学"),
+                    ("005","哈尔滨理工大学"),
+                    ("006","东北农业大学"),
+                    ("007","哈尔滨医科大学"),
+                    ("008","黑龙江中医药大学"),
+                    ("010","哈尔滨师范大学"),
+                    ("011","哈尔滨商业大学"),
+                    ("012","哈尔滨学院"),
+                    ("013","黑龙江工程学院"),
+                    ("014","黑龙江科技学院"),
+                    ("015","哈尔滨德强商务学院"),
+                    ("016","哈尔滨体育学院"),
+                    ("017","黑龙江东方学院"),
 )
 # Create your models here.
 class Subject(models.Model):
     subject = models.CharField(max_length=10, choices=subject_choice)
     grade = models.CharField(max_length=10, choices=grade_choice)
     def __unicode__(self):
-        return self.grade + ' ' + self.subject
+	if self.grade == "Pr":
+		strgrade = u"小学"
+	elif self.grade == "J1":
+		strgrade = u"初一"
+	elif self.grade == "J2":
+		strgrade = u"初二"
+	elif self.grade == "J3":
+		strgrade = u"初三"
+	elif self.grade == "H1":
+		strgrade = u"高一"
+	elif self.grade == "H2":
+		strgrade = u"高二"
+	elif self.grade == "H3":
+		strgrade = u"高三"
+	if self.subject == "Math":
+		strsubject = u"数学"
+	elif self.subject == "Chinese":
+		strsubject = u"语文"
+	elif self.subject == "English":
+		strsubject = u"英语"
+	elif self.subject == "Chemistry":
+		strsubject = u"化学"
+	elif self.subject == "Biology":
+		strsubject = u"生物"
+	elif self.subject == "Physic":
+		strsubject = u"物理"
+        return strgrade+ strsubject
+    class Meta:
+	unique_together = (("subject"),("grade"))
+        ordering = ["grade","subject"]
 class BaseProfile(models.Model):
     userid = models.AutoField(primary_key=True)
     username = models.CharField(verbose_name="用户名", max_length=30, unique=True,
@@ -56,11 +91,13 @@ class BaseProfile(models.Model):
     class Meta:
         ordering = ["username"]
 class Tutor(BaseProfile):
-    score = models.IntegerField(verbose_name="评分", default=0)
+    score = models.FloatField(verbose_name="评分", default=0.0)
     state = models.CharField(verbose_name="状态", max_length=2, choices=state_choice, default='F')
     university = models.CharField(verbose_name="大学", max_length=30, blank=True, choices = university_choice)
     major = models.CharField(verbose_name="专业", max_length=40, blank=True)
-    subject = models.ManyToManyField(Subject, blank=True)
+    subject = models.ManyToManyField(Subject,verbose_name="科目", blank=True)
+    class Meta:
+	ordering = ["score","username"]
 class Parent(BaseProfile):
     address = models.TextField(verbose_name="地址",blank=True)
 class BaseMessage(models.Model):
@@ -91,27 +128,25 @@ class TPComment(BaseMessage):
         return self.from_user.username + " to " + self.to_user.username
 
 class Employ(models.Model):
-    parent = models.ForeignKey(Parent)
+    parent = models.ForeignKey(Parent,null=True,blank=True)
     #子女信息
     age = models.CharField(verbose_name="子女年龄", max_length = 2,choices=age_choice,default="3")
-    gender1 = models.CharField(verbose_name="子女性别", max_length=2, choices=gender_choice)
-    subject = models.ManyToManyField(Subject, blank=True)
+    gender1 = models.CharField(verbose_name="子女性别", max_length=2, choices=gender_choice,default="M")
+    subject = models.ManyToManyField(Subject,verbose_name="科目")
     info1 = models.TextField(verbose_name="子女额外信息描述", blank = True,)
     #家教信息
     gender2 = models.CharField(verbose_name="家教性别要求", max_length = 2,choices = (("N","男女不限"),("M","男"),("F","女")),default = "N")
+    site = models.CharField(verbose_name="教学地点",max_length=10,choices=(('home',"家教上门"),('school',"学生上门")),default="school")
+    time = models.CharField(verbose_name="教学时间段",max_length=10,choices=(('8-11',"8:00-11:30"),('14-17',"14:00-17:30"),('19-21',"19:00-21:30")),default="8-11")
     info2 = models.TextField(verbose_name="家教额外要求", blank = True)
-    site = models.CharField(verbose_name="上课地点", max_length=15, blank=True)
-    time = models.CharField(verbose_name="子女性别", max_length=15, blank=True)
-    salary = models.FloatField(null=True, blank=True)
-
-    info3 = models.TextField(blank = True)
-
+    salary = models.FloatField(verbose_name="薪水(元/小时)",null=True, blank=True)
+    info3 = models.TextField(verbose_name="补充说明",blank = True)
     pub_date = models.DateTimeField(auto_now_add=True)
-    valid_days = models.IntegerField(default=30)
+    valid_days = models.IntegerField(verbose_name="表单有效期(天)",default=30)
     class Meta:
         ordering = ['-pub_date']
     def __unicode__(self):
-        return self.parent.username
+        return self.parent.username+str(self.pub_date)
 
 
 #class Employ

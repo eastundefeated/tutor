@@ -60,18 +60,20 @@ class CreateTutor(BaseCreateForm,forms.ModelForm):
         fields = ["username", "password", "password_confirm", "gender", "email"]
 
 class EmployForm(forms.ModelForm):
+    info1 = forms.CharField(label="子女信息补充",required = False,
+    widget=forms.Textarea(attrs={"cols":30,"rows":5}))
+    info2 = forms.CharField(label="家教要求补充",required = False,
+    widget=forms.Textarea(attrs={"cols":30,"rows":5}))
+    info3 = forms.CharField(label="其他",required = False,
+    widget=forms.Textarea(attrs={"cols":30,"rows":5}))
     class Meta:
         model = Employ
         exclude = ['parent','pub_date']
 class TutorForm(forms.ModelForm):
-    username = forms.CharField(label="用户名", widget=forms.TextInput(attrs={"readonly":True}))
-    gender =  forms.CharField(label="性别", widget=forms.TextInput(attrs={"readonly":True}))
     class Meta:
         model = Tutor
         exclude = ['userid','username','score','password','gender']
 class ParentForm(forms.ModelForm):
-    username = forms.CharField(label="用户名", widget=forms.TextInput(attrs={"readonly":True}))
-    gender =  forms.CharField(label="性别", widget=forms.TextInput(attrs={"readonly":True}))
     class Meta:
         model = Parent
         exclude = ['userid','password','username','gender']

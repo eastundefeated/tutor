@@ -9,5 +9,8 @@ urlpatterns = [
     url(r'^index/$',index),
     url(r'^info/$',myinfo),
     url(r'^upload/$',uploadimage),
+    url(r'^search/$',search),
+    url(r'^publishform/$',publishform),
     url(r'^admin/',include(admin.site.urls)),
+    url(r'^message/$',message),
 ]   

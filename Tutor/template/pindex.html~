@@ -52,10 +52,13 @@ div.message,div.comment{
  height:45%;
  border-radius:10px;
  background:#FFFFFF;
+}h3.notexist{
+  margin-left:40%;
+  margin-top:20%;
 }
 {%endblock%}
 {%block left%}
-<img id="userphoto" src="Tutor/static/image/p{{userid}}.png" alt="用户头像"/> 
+<img id="userphoto" src="/static/image/p{{userid}}.png" alt="用户头像"/> 
 <h2 id="username"><strong style="color:green;">{{username}}</strong>的个人信息</h2>
 <ul>
 <li class="info">姓名:{{user.realname}} </li>
@@ -68,28 +71,35 @@ div.message,div.comment{
 {%block center%}
 <div id="message">
 <h2>最新留言</h2>
+{%if tpmessage%}
+{%for message in tpmessage%}
 <div class="message">
-<img src="{% static 'photo.png' %}"/>
-<p>您好，我是xxx大学的xxx，我希望能和您商谈家教事宜</p>
-<h5 class="time">甲轩&nbsp&nbsp&nbsp2015-8-17 17:30:20</h5>
+<a href="/information/t{{message.from_user.userid}}/"><img class="userphoto" src="/static/image/t{{message.from_user.userid}}.png"/></a>
+<a href="/information/t{{message.from_user.userid}}/">{{message.from_user.username}}</a>
+<p>{{message.content| truncatewords:"30"}}</p>
+时间:{{message.pub_date}}
 </div>
-<div class="message">
-<img src="{% static 'photo.png' %}"/>
-<p>您好，我是xxx大学的xxx，我希望能和您商谈家教事宜</p>
-<h5 class="time">良又&nbsp&nbsp&nbsp2015-8-16 14:21:15</h5>
-</div>
+{%endfor%}
+{%else%}
+<h3 class="notexist">暂无最新留言</h3>
+{%endif%}
+<a href="/message/">点此查看更多</a>
 </div>
 <div id="comment">
 <h2>最新评论</h2>
-<div class="comment">
-<img src="{% static 'photo.png' %}"/>
-<p>家长很和蔼，薪酬很丰厚</p>
-<h5 class="time">仇人九&nbsp&nbsp&nbsp2015-8-17 16:09:34</h5>
+{%if tpcomment%}
+{%for comment in tpcomment%}
+<div class="message">
+<a href="/information/t{{comment.from_user.userid}}/"><img class="userphoto" src="/static/image/t{{comment.from_user.userid}}.png"/></a>
+<a href="/information/t{{comment.from_user.userid}}/">{{comment.from_user.username}}</a>
+<p>{{comment.content| truncatewords:"30"}}</p>
+时间:{{comment.pub_date}}
 </div>
-<div class="commment">
-<img src="{% static 'photo.png' %}"/>
-<p>女儿太娇惯了，不好教</p>
-<h5 class="time">黑肱大师&nbsp&nbsp&nbsp2013-7-8 19:13:19</h5>
+{%endfor%}
+{%else%}
+<h3 class="notexist">暂无最新评论</h3>
+{%endif%}
+<a href="/message/">点此查看更多</a>
 </div>
 </div>
 {%endblock%}

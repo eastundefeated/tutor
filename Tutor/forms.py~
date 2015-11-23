@@ -49,12 +49,12 @@ class BaseCreateForm(forms.Form):
             )
         return password2
 
-class CreateParent(BaseCreateForm):
+class CreateParent(BaseCreateForm,forms.ModelForm):
     class Meta:
         model = Parent
         fields = ["username", "password", "password_confirm", "gender", "email"]
 
-class CreateTutor(BaseCreateForm):
+class CreateTutor(BaseCreateForm,forms.ModelForm):
     class Meta:
         model = Tutor
         fields = ["username", "password", "password_confirm", "gender", "email"]
@@ -64,14 +64,10 @@ class EmployForm(forms.ModelForm):
         model = Employ
         exclude = ['parent','pub_date']
 class TutorForm(forms.ModelForm):
-    username = forms.CharField(label="用户名", widget=forms.TextInput(attrs={"readonly":True}))
-    gender =  forms.CharField(label="性别", widget=forms.TextInput(attrs={"readonly":True}))
     class Meta:
         model = Tutor
         exclude = ['userid','username','score','password','gender']
 class ParentForm(forms.ModelForm):
-    username = forms.CharField(label="用户名", widget=forms.TextInput(attrs={"readonly":True}))
-    gender =  forms.CharField(label="性别", widget=forms.TextInput(attrs={"readonly":True}))
     class Meta:
         model = Parent
         exclude = ['userid','password','username','gender']

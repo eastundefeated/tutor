@@ -1,0 +1,104 @@
+{%extends "pbase.html"%}
+{%block title%}留言板{%endblock%}
+{%block style%}
+li{
+ list-style:none;
+}#container{
+  height:100%;
+}#left{
+ height:100%;
+}a{
+ text-decoration:none;
+}
+#id_subject{
+ height:45px;
+}#id_info{
+ cols:30;
+ rows:5;
+}div.publishfm{
+ background:#BcBcBc;
+ border-radius:10px;
+ border:2px soild #FFFFFF;
+ width:90%;
+ margin-top:20px;
+}img.recommand{
+ width:50px;
+ height:50px;
+ border-radius:50px;
+}#center{
+ height:100%;
+}#message,#comment{
+ margin-left:2%;
+ margin-top:5%;
+ border-radius:10px;
+ width:47%;
+ height:90%;
+ background:orange;
+ float:left;
+}
+{%endblock%}
+{%block left%}
+<h3><center>已发布的表单</center></h3>
+{%if dict_subject%}
+{%for fm,subject_list in dict_subject%}
+<div class="publishfm">
+发表时间:{{fm.pub_date}}<br>
+子女信息:{%ifequal fm.gender1 'M'%}男{%else%}女{%endifequal%}<br>
+补充说明:{{fm.info1}}<br>
+需要帮助科目:{%if subject_list%}
+          {%for subject in subject_list%}
+          {{subject}}<br>
+          {%endfor%}
+{%else%}暂无科目
+{%endif%}
+</div>
+{%endfor%}
+{%else%}
+<a href="/publishform/"><center>暂无表单，去创建一个吧</center></a>
+{%endif%}
+{%endblock%}
+{%block right%}
+<h3><center>推荐家教</center></h3>
+{%if tutors%}
+{%for tutor in tutors%}
+<div class="tutorlist">
+<a href="/information/t{{tutor.userid}}/"><img class="recommand" src="/static/image/t{{tutor.userid}}.png"/></a>
+<a href="/information/t{{tutor.userid}}/">{{tutor.username}}</a>
+评分:{{tutor.score}}
+</div>
+{%endfor%}
+{%endif%}
+{%endblock%}
+{%block center%}
+<div id="message">
+<h2><center>留言</center></h2>
+{%if tpmessage%}
+{%for message in tpmessage%}
+<div class="message" id="m{{message.ID}}">
+<a href="/information/t{{message.from_user.userid}}/"><img class="message" src="/static/image/t{{message.from_user.userid}}.png"/></a>
+来自<a href="/information/t{{message.from_user.userid}}/">{{message.from_user.username}}</a>
+<p class="message">
+{{message.content}}
+</p>
+时间:{{message.pub_date}}
+</div>{%endfor%}
+{%else%}
+<h2><center>暂无留言</center></h2>
+{%endif%}
+</div>
+<div id="comment">
+<h2><center>评论</center></h2>
+{%if tpcomment %}
+{%for comment in tpcomment%}
+<div class="comment" id="c{{comment.ID}}">
+<a href="/information/t{{comment.from_user.userid}}/"><img class="comment" src="/static/image/t{{message.from_user.userid}}.png"/></a>
+来自<a href="/information/t{{comment.from_user.userid}}/">{{comment.from_user.username}}</a>
+<p class="message">
+{{comment.content}}
+</p>时间:{{message.pub_date}}
+</div>{%endfor%}
+{%else%}
+<h2><center>暂无评论</center></h2>
+{%endif%}
+</div>
+{%endblock%}

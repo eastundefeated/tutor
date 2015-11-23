@@ -92,15 +92,23 @@ def logout(request):
 	    return HttpResponseRedirect("/login/")
 	else:
 	    return HttpResponseRedirect("/index/")
-    return render_to_response("logout.html")
+    return render(request,"logout.html")
 #parent
 @login_required
 def index(request):	
     userid = request.session["userid"]
     if request.session['identity'] == 'p':
  	user = Parent.objects.get(userid = userid)
+	if user.receivecomment.count()>2:
+	    tpcomment = user.receivecomment.all()[:2]
+	else:
+	    tpcomment = user.receivecomment.all()
+	if user.receivemessage.count()>2:
+	    tpmessage = user.receivemessage.all()[:2]
+	else:
+	    tpmessage = user.receivemessage.all()
     	username = user.username
-    	return render_to_response('pindex.html' ,locals())
+    	return render(request,'pindex.html' ,locals())
     else:
 	user = Tutor.objects.get(userid = userid)
 	username = user.username
@@ -118,7 +126,7 @@ def myinfo(request):
                form.save()
     	else:
             form = ParentForm(instance=user)
-        return render_to_response('pinfo.html',locals())
+        return render(request,'pinfo.html',locals())
     else:
 	user = Tutor.objects.get(userid=userid)
     	if request.method=="POST":
@@ -127,7 +135,7 @@ def myinfo(request):
                form.save()
     	else:
             form = TutorForm(instance=user)
-        return render_to_response('tinfo.html',locals())
+        return render(request,'tinfo.html',locals())
 @csrf_exempt
 @login_required
 def uploadimage(request):
@@ -140,102 +148,122 @@ def uploadimage(request):
             img.thumbnail((112,54),Image.ANTIALIAS)
             name='./Tutor/static/image/'+str(identity)+str(userid)+'.png'
             img.save(name,"png")
+	    messages.success("图片上传成功")
             return HttpResponseRedirect("/index/")
-    return render_to_response('image.html')
+    return render(request,'image.html')
 @csrf_exempt
 @login_required
-def search_tutor(request):
+def search(request):
     userid = request.session["userid"]
-    username = Parent.objects.get(userid = userid).username
-    if request.method == "GET" and 'q' in request.GET:
-        q = request.GET['q']
-        if q:
-            select = request.GET['select']
-            if select == '0':
-                tutors = Tutor.objects.filter(username__startswith = q)
-            if select == '1':
-                tutors = Tutor.objects.filter(realname__startswith = q)
-            if select == '2':
-                tutors = Tutor.objects.filter(university__startswith = q)
-            if select == '3':
-                tutors = Tutor.objects.filter(userid = q)
-            if len(tutors):
-                return render_to_response('search_tutor.html',{'username':username,'sucess':True,'tutors':tutors})
-            else:
-                error = '未查询到此用户!'
-                return render_to_response('search_tutor.html',{'username':username,'error': error,'sucess':False})
-        else:
-            error = '请输入要查询的信息!'
-            return render_to_response('search_tutor.html',{'username':username,'error': error})
-    if request.method == "POST":
-        if 'grade' in request.POST and 'subject' in request.POST and 'gender' in request.POST:
-            grade = request.POST.get('grade')
-            subject = request.POST.get('subject')
-            gender = request.POST.get('gender')
-            if len(grade) and len(subject) and len(gender):
-                try:
-                    tutors = Subject.objects.get(Q(grade = grade),Q(subject = subject))
-                    tutors = tutors.tutor_set.all()
-                    if gender == 'N':
-                        if tutors:
-                            return render_to_response('search_tutor.html',{'username':username,'sucess':True,'tutors':tutors})
-                        else:
-                            error = '未查询到符合条件的用户!'
-                            return render_to_response('search_tutor.html',{'username':username,'error': error})
-                    else:
-                        tutors = tutors.filter(gender = gender)
-                        if tutors:
-                            return render_to_response('search_tutor.html',{'username':username,'sucess':True,'tutors':tutors})
-                        else:
-                            error = '未查询到符合条件的用户!'
-                            return render_to_response('search_tutor.html',{'username':username,'error': error})
-                except:
-                    error = '未查询到符合条件的用户!'
-                    return render_to_response('search_tutor.html',{'username':username,'error': error})
-        else:
-            error = "请输入完整的筛选信息!"
-            return render_to_response('search_tutor.html',{'username':username,'error': error})
-    error = "请选择一种查询方式查询"
-    return render_to_response('search_tutor.html',{'username':username,'error': error})
-
+    identity = request.session['identity']
+    if identity == "p":
+	user = Parent.objects.get(userid=userid)
+	dict_subject = []
+	for tutor in Tutor.objects.all():
+	     if tutor.subject.count()>2:
+	         dict_subject.append((tutor,tutor.subject.all()[:2]))
+	     else:
+		 dict_subject.append((tutor,tutor.subject.all())) 	
+	if request.method == "POST":
+	    grade=request.POST.get('grade')
+	    subjectlist = request.POST.getlist('subject')
+	    if grade!='N' and subjectlist:	    
+		tutorset = Tutor.objects.filter(subject__grade=grade,subject__subject__in=subjectlist)		
+	    elif grade!='N':
+		tutorset = Tutor.objects.filter(subject__grade=grade)
+	    elif subjectlist:
+		tutorset = Tutor.objects.filter(subject__subject__in=subjectlist)
+	    else:
+		tutorset = Tutor.objects.order_by('-score')
+	    if 'content' in request.POST:
+	        content = request.POST.get('content')
+		tutorset = tutorset.filter(username__contains=content)
+	    if request.POST.get('gender')!='N':
+		tutorset = tutorset.filter(gender=request.POST.get('gender'))
+	    dict_subject = []
+	    for tutor in tutorset:
+		if tutor.subject.count()>2:
+	     	    dict_subject.append((tutor,tutor.subject.all()[:2]))
+	        else:
+		    dict_subject.append((tutor,tutor.subject.all())) 		
+        return render(request,'psearch.html',locals())
+    else:
+	user = Tutor.objects.get(userid=userid)
+	return render(request,'tsearch.html',locals())
 @csrf_exempt
 @login_required
-def employ_tutor(request):
-    userid = request.session["userid"]
-    username = Parent.objects.get(userid = userid).username
+def publishform(request):
+    if Tutor.objects.count()>5:
+    	tutors = Tutor.objects.all()[:5]
+    else:
+	tutors = Tutor.objects.all()
+    userid = request.session['userid']
+    identity = request.session['identity']
+    if identity == 't':
+	messages.warning(request,"您没有该功能!")
+	return HttpResopnseRedirect('/index/')
+    user = Parent.objects.get(userid=userid)
     if request.method == 'POST':
-        ef = employ_form(request.POST)
-        if ef.is_valid():
-            parent = Parent.objects.get(userid = userid)
-            gender1 = ef.cleaned_data['gender1']
-            age = ef.cleaned_data['age']
-            subject = ef.cleaned_data['subject']
-            grade = ef.cleaned_data['grade']
-            info1 = ef.cleaned_data['info1']
-            gender2 = ef.cleaned_data['gender2']
-            info2 = ef.cleaned_data['info2']
-            way = ef.cleaned_data['way']
-            site = ef.cleaned_data['site']
-            time = ef.cleaned_data['time']
-            salary = ef.cleaned_data['salary']
-            linkman = ef.cleaned_data['linkman']
-            phone =  ef.cleaned_data['phone'],
-            info3 = ef.cleaned_data['info3']
-            #return HttpResponse('sucess')
-            employ = Employ.objects.create(
-                parent = parent,gender1 = gender1,
-                age = age,
-                subject = subject,grade = grade,
-                info1 = info1,gender2 = gender2,
-                info2 = info2,
-                way = way,site = site,
-                time = time,salary = salary,
-                linkman = linkman,phone =  phone,
-                info3 = info3
-                )
-            employ.save()
-    return render_to_response('employ_tutor.html',{'username':username})
-
+	if "delete" in request.POST:
+	     Employ.objects.get(id=request.POST.get("delete")).delete()
+	     form = EmployForm()
+	     messages.success(request,"删除成功")
+	else:
+	    form = EmployForm(request.POST)
+	    if form.is_valid():
+	        employ = form.save()
+	        employ.parent = user
+	        employ.save()
+		if employ.subject.all():
+		    print "hello"
+		else:
+		    print 'I am here'
+    	        messages.success(request,"发布成功")
+		form = EmployForm()
+    else:
+	form = EmployForm()
+    if user.employ_set.count()>4:
+	forms = user.employ_set.all()[:4]
+    else:
+	forms = user.employ_set.all()
+    dict_subject = []
+    for fm in forms:
+	if fm.subject.count()>2:
+	    dict_subject.append((fm,fm.subject.all()[:2]))
+        else:
+	    dict_subject.append((fm,fm.subject.all()))
+    return render(request,"publishform.html",locals())
+@csrf_exempt
+@login_required
+def message(request):
+    userid = request.session['userid']
+    identity = request.session['identity']
+    if identity == "p":
+	user = Parent.objects.get(userid=userid)
+	tpmessage = user.receivemessage.all()
+        tpcomment = user.receivecomment.all()
+	if Tutor.objects.count()>5:
+    	    tutors = Tutor.objects.all()[:5]
+        else:
+	    tutors = Tutor.objects.all()
+	if request.method == 'POST':
+	    if "delete" in request.POST:
+	        messages.success(request,"删除成功")
+	if user.employ_set.count()>4:
+            forms = user.employ_set.all()[:4]
+        else:
+	    forms = user.employ_set.all()
+        dict_subject = []
+        for fm in forms:
+	    if fm.subject.count()>2:
+	        dict_subject.append((fm,fm.subject.all()[:2]))
+            else:
+	        dict_subject.append((fm,fm.subject.all()))	
+	return render(request,"pmessage.html",locals())
+    else:
+	user = Tutor.objects.get(userid=userid)
+	return render(request,"tmessage.html",locals())
+    
 @login_required
 def message_parent(request):
     userid = request.session["userid"]
@@ -253,14 +281,6 @@ def comment_parent(request):
     tpc = TPComment.objects.filter(to_user = user)
     ptc = PTComment.objects.filter(from_user = user)
     return render_to_response('comment_parent.html',{'username':username,'PTComment':ptc,'TPComment':tpc})
-
-@login_required
-def index_tutor(request):
-    userid = request.session["userid"]
-    username = Tutor.objects.get(userid = userid).username
-
-    return render_to_response('index_tutor.html' ,{'username':username})
-
 @login_required
 def message_tutor(request):
     userid = request.session["userid"]
@@ -278,32 +298,6 @@ def comment_tutor(request):
     tpc = TPComment.objects.filter(from_user = user)
     ptc = PTComment.objects.filter(to_user = user)
     return render_to_response('comment_tutor.html',{'username':username,'PTComment':ptc,'TPComment':tpc})
-
-
-@csrf_exempt
-@login_required
-def myinfo_tutor(request):
-    userid = request.session["userid"]
-    user = Tutor.objects.get(userid = userid)
-    if request.method == "POST":
-        tf = tutor_form(request.POST)
-        try:
-            if tf.is_valid():
-                user.realname = tf.cleaned_data['realname']
-                user.email = tf.cleaned_data['email']
-                #user.gender = gender
-                user.age = int(tf.cleaned_data['age'])
-                user.qq = int(tf.cleaned_data['qq'])
-                user.phone = int(tf.cleaned_data['phone'])
-                user.major = tf.cleaned_data['major']
-                user.university = tf.cleaned_data['university']
-                user.information = tf.cleaned_data['information']
-                #return HttpResponse(user.information)
-                user.save()
-                return render_to_response('myinfo_tutor.html',{'username':user.username,'user':user})
-        except:
-            return render_to_response('myinfo_tutor.html',{'username':user.username,'user':user})
-    return render_to_response('myinfo_tutor.html',{'username':user.username,'user':user})
 
 @csrf_exempt
 @login_required
