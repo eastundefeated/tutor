@@ -1,0 +1,56 @@
+{%extends "tbase.html" %}
+{%block title%}经历分享{%endblock%}
+{%block style%}
+#center{
+ height:100%;
+}#form{
+ width:90%;
+ margin-left:5%;
+ border:5px solid #FFFFFF;
+ border-radius:20px;
+}#save{
+ margin-left:70%;
+ width:80px;
+ height:30px;
+ border-radius:15px;
+ background:#9C9C9C;
+}div.exp{
+ margin-top:20px;
+ background:#99FFCC;
+ border-radius:5px;
+ border:2px solid #996633;
+ width:70%;
+ margin-left:10%;
+}button.delete{
+ margin-right:5%;
+ margin-top:2px;
+ border:none;
+ float:right;
+}.errorlist{
+ color:red;
+}
+{%endblock%}
+{%block center%}
+<h2 style="color:green;margin-left:10%;">经历分享</h2>
+<div id="form">
+<form method="POST">
+<p>
+{{form.as_p}}
+</p>
+<input id="save" name="save" type="submit" value="保存" />
+</form>
+</div>
+{%if forms%}
+<form method="POST">
+{%for fm in forms%}
+<div class="exp">
+标题:{{fm.title}}<button class="delete" name="delete" value="{{fm.id}}">删除</button><br>
+内容:{{fm.content|truncatewords:"30"}}<br>
+发表时间:{{fm.pub_date}}
+</div>
+{%endfor%}
+</form>
+{%else%}
+暂无经历分享
+{%endif%}
+{%endblock%}

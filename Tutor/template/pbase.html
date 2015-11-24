@@ -79,7 +79,8 @@ a.titleline:hover{
 }li.success{color:green;font-size:15px;}
 li.warning{color:yellow;font-size:15px;}
 li.error{color:red;font-size:15px;}
- {%block style%}
+textarea{outline:none;resize:none;} 
+{%block style%}
  {%endblock%}
 </style>
 {%block script%}
@@ -92,7 +93,6 @@ li.error{color:red;font-size:15px;}
 <li class="titleline"><a class="titleline" href="/index">我的主页</a></li>
 <li class="titleline"><a class="titleline" href="/search">家教搜索</a></li>
 <li class="titleline"><a class="titleline" href="/publishform/">招募启示</a></li>
-<li class="titleline"><a class="titleline" href="/share/">经历分享</a></li>
 <li class="titleline"><a class="titleline" href="/message/">留言板</a></li>
 </ul>
 <a href="/index/"><img id="photo" src="/static/image/p{{user.userid}}.png"  alt="用户图像" /></a>

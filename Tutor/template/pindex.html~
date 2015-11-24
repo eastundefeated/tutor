@@ -1,4 +1,4 @@
-{%extends "pbase.html"%}
+{%extends "tbase.html"%}
 {% load staticfiles %}
 {%block title%}个人主页{%endblock%}
 {%block style%}
@@ -7,6 +7,8 @@
  height:180px;
  margin-top:10%;
  margin-left:5%;
+}li{
+ list-style:none;
 }
 #username{
  text-align:center;
@@ -46,6 +48,11 @@ div.message,div.comment{
  margin-top:0;
  width:98%;
  height:40%;
+}div.publishfm{
+ background:#C9C9C9;
+ width:90%;
+ border-radius:15px;
+ margin-bottom:2px;
 }
 #tutor_list,#tutor_recommand{
  width:90%;
@@ -55,6 +62,17 @@ div.message,div.comment{
 }h3.notexist{
   margin-left:40%;
   margin-top:20%;
+}a.moreinfo{
+ text-decoration:none;
+ margin-left:80%;
+ margin-top:80%;
+ margin-bottom:1%;
+}img.tutorphoto{
+ width:50px;
+ height:50px;
+ border-radius:50px;
+}a{
+ text-decoration:none;
 }
 {%endblock%}
 {%block left%}
@@ -83,7 +101,7 @@ div.message,div.comment{
 {%else%}
 <h3 class="notexist">暂无最新留言</h3>
 {%endif%}
-<a href="/message/">点此查看更多</a>
+<a class="moreinfo" href="/message/">点此查看更多</a>
 </div>
 <div id="comment">
 <h2>最新评论</h2>
@@ -99,20 +117,39 @@ div.message,div.comment{
 {%else%}
 <h3 class="notexist">暂无最新评论</h3>
 {%endif%}
-<a href="/message/">点此查看更多</a>
+<a class="moreinfo" href="/message/">点此查看更多</a>
 </div>
 </div>
 {%endblock%}
 {%block right%}
 <div id="tutor_recommand">
-<h3>家教推荐</h5>
+<a href="/publishform/"><h3><center>最新表单</center></h3></a>
+{%if dict_subject%}
+{%for fm,subject_list in dict_subject%}
+<div class="publishfm">
+发表时间:{{fm.pub_date}}<br>
+子女信息:{%ifequal fm.gender1 'M'%}男{%else%}女{%endifequal%}<br>
+补充说明:{{fm.info1}}<br>
+需要帮助科目:{%if subject_list%}
+          {%for subject in subject_list%}
+          {{subject}}&nbsp;
+          {%endfor%}
+{%else%}暂无科目
+ {%endif%}
+</div>
+{%endfor%}
+{%endif%}
 </div>
 <div id="tutor_list">
 <h3>家教排行榜</h4>
-<ol>
-<li>大山的子孙&nbsp<strong style="color:red;">9.8</strong></li>
-<li>红星照耀中国&nbsp<strong style="color:red;">8.6</strong></li>
-<li>我欲成仙&nbsp<strong style="color:red;">7.6</strong></li>
-</ol>
+{%if tutorset%}
+{%for tutor in tutorset%}
+<div class="tutorlist">
+<a href="/information/t/{{tutor.userid}}/"><img class="tutorphoto" src="/static/image/t{{tutor.userid}}.png"/></a>
+<a href="/information/t/{{tutor.userid}}/">{{tutor.username}}</a>
+评分:{{tutor.score}}
+</div>
+{%endfor%}
+{%endif%}
 </div>
 {%endblock%}

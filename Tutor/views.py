@@ -1,5 +1,5 @@
 #coding=utf8
-from django.shortcuts import render,render_to_response
+from django.shortcuts import render,render_to_response, get_object_or_404
 from django.http import HttpResponse,HttpResponseRedirect
 from models import *
 from django.views.decorators.csrf import csrf_exempt
@@ -7,6 +7,7 @@ from django.contrib import messages
 from forms import *
 from django.db.models import Q
 from PIL import Image
+import math
 def redirect_to_index(fn):
     def login_check(request,*args):
         if 'userid' in request.session:
@@ -98,7 +99,23 @@ def logout(request):
 def index(request):	
     userid = request.session["userid"]
     if request.session['identity'] == 'p':
- 	user = Parent.objects.get(userid = userid)
+	if Tutor.objects.count()>5:
+	    tutorset = Tutor.objects.all()[:5]
+	else:
+	    tutorset = Tutor.objects.all()	
+	user = Parent.objects.get(userid = userid)
+	if user.employ_set.count()>0:
+	    fm = user.employ_set.all()[0]
+	    if fm.gender2 == "N":
+		pass
+	    else:
+		tutorset = tutorset.filter(gender=fm.gender2)
+	    tutorset = list(tutorset)
+	    tutorset.sort(key = lambda x:len(set(x.subject.all())&set(fm.subject.all())),reverse=True)
+	forms = (user.employ_set.all()[:2] if (user.employ_set.count()>2) else user.employ_set.all())
+	dict_subject = []
+	for form in forms:
+	    dict_subject.append((form,(form.subject.all()[:3] if (form.subject.count()>3) else form.subject.all())))
 	if user.receivecomment.count()>2:
 	    tpcomment = user.receivecomment.all()[:2]
 	else:
@@ -111,6 +128,18 @@ def index(request):
     	return render(request,'pindex.html' ,locals())
     else:
 	user = Tutor.objects.get(userid = userid)
+	if user.receivecomment.count()>2:
+	    ptcomment = user.receivecomment.all()[:2]
+	else:
+	    ptcomment = user.receivecomment.all()
+	if user.receivemessage.count()>2:
+	    ptmessage = user.receivemessage.all()[:2]
+	else:
+	    ptmessage = user.receivemessage.all()
+	forms = Employ.objects.all()[:4] if Employ.objects.count()>4 else Employ.objects.all()
+	dict_subject = []
+	for form in forms:
+	    dict_subject.append((form,(form.subject.all()[:3] if (form.subject.count()>3) else form.subject.all())))
 	username = user.username
         return render(request,'tindex.html' ,locals())
 @csrf_exempt
@@ -123,7 +152,8 @@ def myinfo(request):
     	if request.method=="POST":
             form = ParentForm(request.POST,instance=user)
             if form.is_valid() and form.has_changed():
-               form.save()
+                form.save()
+	        messages.success(request,"修改成功")
     	else:
             form = ParentForm(instance=user)
         return render(request,'pinfo.html',locals())
@@ -132,7 +162,8 @@ def myinfo(request):
     	if request.method=="POST":
             form = TutorForm(request.POST,instance=user)
             if form.is_valid() and form.has_changed():
-               form.save()
+                form.save()
+		messages.success(request,"修改成功")
     	else:
             form = TutorForm(instance=user)
         return render(request,'tinfo.html',locals())
@@ -145,10 +176,10 @@ def uploadimage(request):
         if 'image' in request.FILES:
             image=request.FILES["image"]
             img=Image.open(image)
-            img.thumbnail((112,54),Image.ANTIALIAS)
+            img.thumbnail((200,180),Image.ANTIALIAS)
             name='./Tutor/static/image/'+str(identity)+str(userid)+'.png'
             img.save(name,"png")
-	    messages.success("图片上传成功")
+	    messages.success(request,"图片上传成功")
             return HttpResponseRedirect("/index/")
     return render(request,'image.html')
 @csrf_exempt
@@ -189,6 +220,17 @@ def search(request):
         return render(request,'psearch.html',locals())
     else:
 	user = Tutor.objects.get(userid=userid)
+	forms = Employ.objects.all()
+	if request.method == "POST":
+	    tutorgender = request.POST.get('tutorgender')
+	    grade = request.POST.get('grade')
+	    subject_list = request.POST.getlist('subject')
+	    forms = forms.filter(Q(gender2=tutorgender)|Q(gender2="N")) if tutorgender != "N" else forms
+	    forms = forms.filter(subject__grade=grade) if grade != "N" else forms
+	    forms = forms.filter(subject__subject__in=subject_list) if subject_list else forms	
+	dict_subject = []
+    	for fm in forms:
+	    dict_subject.append((fm,(fm.subject.all()[:5] if fm.subject.count()>5 else fm.subject.all())))	
 	return render(request,'tsearch.html',locals())
 @csrf_exempt
 @login_required
@@ -205,25 +247,26 @@ def publishform(request):
     user = Parent.objects.get(userid=userid)
     if request.method == 'POST':
 	if "delete" in request.POST:
-	     Employ.objects.get(id=request.POST.get("delete")).delete()
-	     form = EmployForm()
-	     messages.success(request,"删除成功")
-	else:
+	     try:
+	         Employ.objects.get(id=request.POST.get("delete")).delete()
+	         form = EmployForm()
+	         messages.success(request,"删除成功")
+	     except Employ.DoesNotExist:
+		 form = EmployForm()
+	elif "save" in request.POST:
 	    form = EmployForm(request.POST)
 	    if form.is_valid():
 	        employ = form.save()
 	        employ.parent = user
 	        employ.save()
-		if employ.subject.all():
-		    print "hello"
-		else:
-		    print 'I am here'
     	        messages.success(request,"发布成功")
-		form = EmployForm()
+		return HttpResponseRedirect('/index/')
+	else:
+	    form = EmployForm()
     else:
 	form = EmployForm()
-    if user.employ_set.count()>4:
-	forms = user.employ_set.all()[:4]
+    if user.employ_set.count()>3:
+	forms = user.employ_set.all()[:3]
     else:
 	forms = user.employ_set.all()
     dict_subject = []
@@ -242,12 +285,13 @@ def message(request):
 	user = Parent.objects.get(userid=userid)
 	tpmessage = user.receivemessage.all()
         tpcomment = user.receivecomment.all()
-	if Tutor.objects.count()>5:
-    	    tutors = Tutor.objects.all()[:5]
+	if Tutor.objects.count()>10:
+    	    tutors = Tutor.objects.all()[:10]
         else:
 	    tutors = Tutor.objects.all()
 	if request.method == 'POST':
 	    if "delete" in request.POST:
+		PTMessages.objects.delete(id=request.POST.get("delete"))
 	        messages.success(request,"删除成功")
 	if user.employ_set.count()>4:
             forms = user.employ_set.all()[:4]
@@ -262,65 +306,60 @@ def message(request):
 	return render(request,"pmessage.html",locals())
     else:
 	user = Tutor.objects.get(userid=userid)
+	tpmessage = user.receivemessage.all()
+        tpcomment = user.receivecomment.all()
+	if Tutor.objects.count()>10:
+    	    tutors = Tutor.objects.all()[:10]
+        else:
+	    tutors = Tutor.objects.all()
+	if request.method == 'POST':
+	    if "delete" in request.POST:
+		PTMessages.objects.delete(id=request.POST.get("delete"))
+	        messages.success(request,"删除成功")
+	if Employ.objects.count()>4:
+            forms = Employ.objects.all()[:4]
+        else:
+	    forms = Employ.objects.all()
+        dict_subject = []
+        for fm in forms:
+	    if fm.subject.count()>2:
+	        dict_subject.append((fm,fm.subject.all()[:2]))
+            else:
+	        dict_subject.append((fm,fm.subject.all()))	
 	return render(request,"tmessage.html",locals())
-    
 @login_required
-def message_parent(request):
-    userid = request.session["userid"]
-    username = Parent.objects.get(userid = userid).username
-    user = Parent.objects.get(username = username)
-    tpm = TPMessage.objects.filter(to_user = user)
-    ptm = PTMessage.objects.filter(from_user = user)
-    return render_to_response('message_parent.html',{'username':username,'TPMessage':tpm,'PTMessage':ptm})
-
-@login_required
-def comment_parent(request):
-    userid = request.session["userid"]
-    username = Parent.objects.get(userid = userid).username
-    user = Parent.objects.get(username = username)
-    tpc = TPComment.objects.filter(to_user = user)
-    ptc = PTComment.objects.filter(from_user = user)
-    return render_to_response('comment_parent.html',{'username':username,'PTComment':ptc,'TPComment':tpc})
-@login_required
-def message_tutor(request):
-    userid = request.session["userid"]
-    username = Tutor.objects.get(userid = userid).username
-    user = Tutor.objects.get(username = username)
-    tpm = TPMessage.objects.filter(from_user = user)
-    ptm = PTMessage.objects.filter(to_user = user)
-    return render_to_response('message_tutor.html',{'username':username,'TPMessage':ptm,'PTMessage':tpm})
-
-@login_required
-def comment_tutor(request):
-    userid = request.session["userid"]
-    username = Tutor.objects.get(userid = userid).username
-    user = Tutor.objects.get(username = username)
-    tpc = TPComment.objects.filter(from_user = user)
-    ptc = PTComment.objects.filter(to_user = user)
-    return render_to_response('comment_tutor.html',{'username':username,'PTComment':ptc,'TPComment':tpc})
-
+def showdetail(request,id):
+    if request.session['identity'] == 'p':
+	return HttpResponseRedirect('/index/')
+    else:
+	user = Tutor.objects.get(userid=request.session['userid'])
+	employ = get_object_or_404(Employ,id=id)
+	import datetime
+	subject_list = employ.subject.all()
+	validtime = employ.pub_date + datetime.timedelta(days=employ.valid_days)
+	return render_to_response("employ.html",locals())
 @csrf_exempt
 @login_required
-def tutor(request,i):
-    username = i
-    userid = request.session["userid"]
-    user = Parent.objects.get(userid = userid)
-    tutor = Tutor.objects.get(username = username)
+def share(request):
+    userid = request.session['userid']
+    identity = request.session['identity']
+    if identity == 'p':
+   	return HttpResponseRedirect('/index/')
+    user = Tutor.objects.get(userid=userid)
     if request.method == "POST":
-        comment = request.POST['comment']
-        ptm = PTMessage.objects.create(from_user = user,to_user = tutor,content = comment)
-
-    return render_to_response('tutor.html',{'username':user.username,'tutor':tutor})
-
-@csrf_exempt
-@login_required
-def parent(request,i):
-    username = i
-    userid = request.session["userid"]
-    user = Tutor.objects.get(userid = userid)
-    tutor = Parent.objects.get(username = username)
-    if request.method == "POST":
-        message = request.POST['message']
-        ptm = TPMessage.objects.create(from_user = user,to_user = tutor,content = message)
-
-    return render_to_response('parent.html',{'username':user.username,'tutor':tutor})
+	if "delete" in request.POST:
+	    Exp.objects.get(id=request.POST.get('delete')).delete()
+	    messages.success(request,"删除成功")
+	    return HttpResponseRedirect("/index/")
+	elif "save" in request.POST:
+    	    form = ExpForm(request.POST)
+	    if form.is_valid():
+	        exp = form.save()
+	        exp.tutor = user
+ 	        exp.save()
+	        messages.success(request,"发表成功!")
+	        return HttpResponseRedirect("/index/")
+    else:
+	form = ExpForm()
+    forms = user.exp_set.all()
+    return render_to_response("share.html",locals())

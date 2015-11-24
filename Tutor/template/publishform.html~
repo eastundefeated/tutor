@@ -6,7 +6,8 @@ li{
 }#container{
   height:100%;
 }#left{
- height:auto;
+ height:100%;
+ margin:auto;
 }
 #id_subject{
  height:45px;
@@ -21,7 +22,11 @@ li{
  height:90%;
  border-radius:15px;
  border:5px solid #FFFFFF;
-}#submit{
+}input.subset{
+ width:100px;
+ height:80px;
+}
+#reset{
  margin-top:8%;
  margin-left:60%;
 }div.publishfm{
@@ -37,7 +42,7 @@ li{
 }
 {%endblock%}
 {%block left%}
-<h3><center>已发布的表单</center></h3>
+<h3><center>最新发布的表单</center></h3>
 {%if dict_subject%}
 {%for fm,subject_list in dict_subject%}
 <div class="publishfm">
@@ -63,8 +68,8 @@ li{
 <table id="employtable">
 {{form.as_table}}
 </table>
-<input id="submit" type="submit" value="保存" />
-<input id="reset" type="reset" value="重置" />
+<input id="reset" class="subset" type="reset" value="重置" />
+<input id="submit" class="subset" name="save" type="submit" value="保存" />
 </form>
 </div>
 {%endblock%}

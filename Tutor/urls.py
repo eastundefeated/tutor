@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^publishform/$',publishform),
     url(r'^admin/',include(admin.site.urls)),
     url(r'^message/$',message),
+    url(r'^employform/(\d+)/$',showdetail),
+    url(r'^share/$',share),
 ]   

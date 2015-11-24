@@ -26,7 +26,10 @@ div{
   width:auto;
   height:3%;
   clear:both;
-}li.titleline{
+}li{
+ list-style:none;
+}
+li.titleline{
  float:left;
  margin-left:30px;
  margin-top:55px;
@@ -76,9 +79,14 @@ a.titleline:hover{
  width:20%;
  height:100%;
  background:#C9C9C9;
-}
+}li.success{color:green;font-size:15px;}
+li.warning{color:yellow;font-size:15px;}
+li.error{color:red;font-size:15px;}
+textarea{outline:none;resize:none;}
  {%block style%}
  {%endblock%}
+{%block script%}
+{%endblock%}
 </style>
 </head>
 <body id="page">
@@ -90,9 +98,17 @@ a.titleline:hover{
 <li class="titleline"><a class="titleline" href="/message/">留言板</a></li>
 </ul>
 <a href="/index/"><img id="photo" src="/static/image/t{{user.userid}}.png"  alt="用户图像" /></a>
+欢迎您！<strong style="color:green;">{{user.username}}</strong>
 <a href="/logout/"><button id="logout" name="loggout">退出</button></a>
 </div>
 <div id="container">
+{% if messages %}
+	<ul class="messages">
+    	{% for message in messages %}
+    	<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    	{% endfor %}
+	</ul>
+{% endif %}
 <div id="left">{%block left%}{%endblock%}</div>
 <div id="center">{%block center%}{%endblock%}</div>
 <div id="right">{%block right%}{%endblock%}</div>

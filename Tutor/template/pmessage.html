@@ -25,20 +25,27 @@ li{
  width:50px;
  height:50px;
  border-radius:50px;
-}#center{
+}#footer{
+ height:auto;
+}
+#center{
  height:100%;
+ margin:auto;
 }#message,#comment{
  margin-left:2%;
  margin-top:5%;
  border-radius:10px;
  width:47%;
  height:90%;
- background:orange;
+ background:#9D9D9D;
  float:left;
+}div.tutorlist{
+ margin-top:20px;
+ margin-left:20px;
 }
 {%endblock%}
 {%block left%}
-<h3><center>已发布的表单</center></h3>
+<a href="/publishform/"><h3><center>最新发布的表单</center></h3></a>
 {%if dict_subject%}
 {%for fm,subject_list in dict_subject%}
 <div class="publishfm">
@@ -81,6 +88,7 @@ li{
 {{message.content}}
 </p>
 时间:{{message.pub_date}}
+<form method="POST"><button name="delete" value="{{message.id}}">删除</button></form>
 </div>{%endfor%}
 {%else%}
 <h2><center>暂无留言</center></h2>

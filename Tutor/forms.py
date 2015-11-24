@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from django import forms
-from models import Tutor, Parent, Employ
+from models import *
 #from django.forms import ModelForm
 
 grade_choice = (('Primary', '小学'), ('J1', '初一'), ('J2', '初二'), ('J3','初三'),
@@ -78,4 +78,11 @@ class ParentForm(forms.ModelForm):
         model = Parent
         exclude = ['userid','password','username','gender']
 
-
+class ExpForm(forms.ModelForm):
+    title = forms.CharField(label="标题",max_length=20,
+      error_messages={
+	'required':"标题不能为空",
+    })
+    class Meta:
+	model = Exp
+	exclude = ['tutor','pub_date']

@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from django import forms
-from models import Tutor, Parent, Employ
+from models import *
 #from django.forms import ModelForm
 
 grade_choice = (('Primary', '小学'), ('J1', '初一'), ('J2', '初二'), ('J3','初三'),
@@ -60,6 +60,12 @@ class CreateTutor(BaseCreateForm,forms.ModelForm):
         fields = ["username", "password", "password_confirm", "gender", "email"]
 
 class EmployForm(forms.ModelForm):
+    info1 = forms.CharField(label="子女信息补充",required = False,
+    widget=forms.Textarea(attrs={"cols":30,"rows":5}))
+    info2 = forms.CharField(label="家教要求补充",required = False,
+    widget=forms.Textarea(attrs={"cols":30,"rows":5}))
+    info3 = forms.CharField(label="其他",required = False,
+    widget=forms.Textarea(attrs={"cols":30,"rows":5}))
     class Meta:
         model = Employ
         exclude = ['parent','pub_date']
@@ -72,4 +78,7 @@ class ParentForm(forms.ModelForm):
         model = Parent
         exclude = ['userid','password','username','gender']
 
-
+class ExpForm(forms.ModelForm):
+    class Meta:
+	model = Exp
+	exclude = ['tutor','pub_date']

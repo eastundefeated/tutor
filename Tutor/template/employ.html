@@ -1,0 +1,52 @@
+{%extends "tbase.html"%}
+{%block style%}
+#employ{
+ font-family:KaiTi;
+ width:90%;
+ height:98%;
+ margin-top:1%;
+ margin-left:5%;
+ font-size:20px;
+ border-radius:20px;
+ border:5px solid #FFFFFF;
+}#parentphoto{
+ width:80px;
+ height:80px;
+ border-radius:50px;
+}#time{
+ margin-left:70%;
+ color:#9F9F9F;
+}a{
+ text-decoration:none;
+}
+li{
+ list-style:none;
+ margin-top:10px;
+}
+{%endblock%}
+{%block center%}
+<div id="employ">
+<h6 id="time">发表时间:{{employ.pub_date|date:"F j,Y"}}</h6>
+<a href="/information/p/{{employ.parent.userid}}/"><img id="parentphoto" src="/static/image/p{{employ.parent.userid}}.png"/></a>
+发表人:<a href="/information/p/{{employ.parent.userid}}/">{{employ.parent.username}}</a><br>
+<ul id="forminfo">
+<li>子女信息:</li>
+<li>子女年龄:{%if employ.age%}{{employ.age}}{%endif%}</li>
+<li>性别:{%ifequal employ.gender1 'M' %}男{%else%}女{%endifequal%}</li>
+<li>需要辅导的科目:{%if subject_list%}
+{%for subject in subject_list %}
+{{subject}}&nbsp;&nbsp;
+{%endfor%}
+{%else%}{%endif%}</li>
+<li>额外信息:{{employ.info1}}</li>
+<li>家教要求:</li>
+<li>性别要求:{%ifequal employ.gender2 'N'%}男女不限{%else%}{%ifequal employ.gender2 'M'%}男{%else%}女{%endifequal%}{%endifequal%}</li>
+<li>上门方式:{%ifequal employ.site 'home'%}家教上门{%else%}学生上门{%endifequal%}</li>
+<li>上课时间段:{%ifequal employ.time '8-11'%}8:00-11:30{%else%}{%ifequal employ.time '14-17'%}14:00-17:30{%else%}19:00-21:30{%endifequal%}{%endifequal%}</li>
+<li>工资:{%if employ.salary%}{{employ.salary}}{%else%}未定{%endif%}</li>
+<li>家教额外信息要求:{{employ.info2}}</li>
+<li>表单有效日期截止:{{validtime|date:"F j,Y"}}</li>
+<li>补充说明:{{employ.info3}}</li>
+</ul>
+</div>
+{%endblock%}

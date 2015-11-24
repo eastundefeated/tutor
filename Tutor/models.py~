@@ -96,6 +96,8 @@ class Tutor(BaseProfile):
     university = models.CharField(verbose_name="大学", max_length=30, blank=True, choices = university_choice)
     major = models.CharField(verbose_name="专业", max_length=40, blank=True)
     subject = models.ManyToManyField(Subject,verbose_name="科目", blank=True)
+    class Meta:
+	ordering = ["score","username"]
 class Parent(BaseProfile):
     address = models.TextField(verbose_name="地址",blank=True)
 class BaseMessage(models.Model):
@@ -134,7 +136,7 @@ class Employ(models.Model):
     info1 = models.TextField(verbose_name="子女额外信息描述", blank = True,)
     #家教信息
     gender2 = models.CharField(verbose_name="家教性别要求", max_length = 2,choices = (("N","男女不限"),("M","男"),("F","女")),default = "N")
-    site = models.CharField(verbose_name="教学地点",max_length=10,choices=(('home',"家教上门"),('school',"学生上门")),default="school")
+    site = models.CharField(verbose_name="教学地点",max_length=10,choices=(('home',"家教上门"),('school',"学生上门")),default="home")
     time = models.CharField(verbose_name="教学时间段",max_length=10,choices=(('8-11',"8:00-11:30"),('14-17',"14:00-17:30"),('19-21',"19:00-21:30")),default="8-11")
     info2 = models.TextField(verbose_name="家教额外要求", blank = True)
     salary = models.FloatField(verbose_name="薪水(元/小时)",null=True, blank=True)
@@ -142,9 +144,18 @@ class Employ(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True)
     valid_days = models.IntegerField(verbose_name="表单有效期(天)",default=30)
     class Meta:
-        ordering = ['-pub_date']
+        ordering = ['-pub_date',"salary"]
     def __unicode__(self):
         return self.parent.username+str(self.pub_date)
-
-
-#class Employ
+class Exp(models.Model):
+    tutor = models.ForeignKey(Tutor,blank=True,null=True)
+    title = models.CharField(verbose_name="标题",max_length=20,
+      error_messages={
+	'required':"标题不能为空",
+    })
+    content = models.TextField(verbose_name="内容",blank=True)
+    pub_date = models.DateTimeField(auto_now_add=True)
+    class Meta:
+	ordering = ['-pub_date']
+    def __unicode__(self):
+	return self.title
