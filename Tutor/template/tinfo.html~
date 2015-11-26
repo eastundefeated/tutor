@@ -65,7 +65,7 @@
 <li class="li_info">姓名:&nbsp;&nbsp;{{form.realname}}</li>
 <li class="li_info">性别:&nbsp;&nbsp;{%ifequal user.gender 'M' %}男{%else%}女{%endifequal%}</li>
 <li class="li_info">年龄:&nbsp;&nbsp;{{form.age}}</li>
-<li class="li_info">邮箱:&nbsp;&nbsp;{{form.email}}<strong style="color:red;">必填</strong></li>
+<li class="li_info">邮箱:&nbsp;&nbsp;{{user.email}}<strong style="color:red;">必填</strong></li>
 </ul>
 </td><td id="im_td">
 <img id="userphoto" src="/static/image/t{{userid}}.png" alt="暂无用户图像"/>

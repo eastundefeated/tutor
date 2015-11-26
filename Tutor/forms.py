@@ -2,7 +2,7 @@
 from django import forms
 from models import *
 #from django.forms import ModelForm
-
+import hashlib
 grade_choice = (('Primary', '小学'), ('J1', '初一'), ('J2', '初二'), ('J3','初三'),
                     ('H1', '高一'), ('H2', '高二'), ('H3', '高三'))
 subject_choice = (('Math', '数学'),('Chinese', '语文'),("English", '英语'),
@@ -11,8 +11,7 @@ subject_choice = (('Math', '数学'),('Chinese', '语文'),("English", '英语')
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=10,widget=forms.TextInput(attrs={"placeholder":"用户名"}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder":"密码"}))
-
-class BaseCreateForm(forms.Form):
+class BaseCreate(forms.Form):
     username = forms.CharField(max_length=30,
         widget=forms.TextInput(attrs={'placeholder':'用户名'}),
         error_messages={
@@ -48,13 +47,13 @@ class BaseCreateForm(forms.Form):
                 code='password_mismatch',
             )
         return password2
-
-class CreateParent(BaseCreateForm,forms.ModelForm):
+class CreateParent(BaseCreate,forms.ModelForm):
     class Meta:
         model = Parent
         fields = ["username", "password", "password_confirm", "gender", "email"]
-
-class CreateTutor(BaseCreateForm,forms.ModelForm):
+    
+class CreateTutor(BaseCreate,forms.ModelForm):
+    
     class Meta:
         model = Tutor
         fields = ["username", "password", "password_confirm", "gender", "email"]
@@ -72,11 +71,11 @@ class EmployForm(forms.ModelForm):
 class TutorForm(forms.ModelForm):
     class Meta:
         model = Tutor
-        exclude = ['userid','username','score','password','gender']
+        exclude = ['userid','username','score','password','is_active','email','gender']
 class ParentForm(forms.ModelForm):
     class Meta:
         model = Parent
-        exclude = ['userid','password','username','gender']
+        exclude = ['userid','password','username','is_active','email','gender']
 
 class ExpForm(forms.ModelForm):
     title = forms.CharField(label="标题",max_length=20,

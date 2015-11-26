@@ -129,7 +129,7 @@ h3.notexist{
 {%for fm,subject_list in dict_subject%}
 <div class="publishfm">
 <a href="/information/p/{{fm.parent.userid}}/">{{fm.parent.username}}</a>
-<a href="/information/p/{{fm.parent.userid}}/"><img class="parentphoto" src="/static/image/p{{fm.parent.userid}}.png" alt="暂无图像" /></a>
+<a href="/information/p/{{fm.parent.userid}}/"><img class="userphoto" src="/static/image/p{{fm.parent.userid}}.png" alt="暂无图像" /></a>
 子女信息:{%ifequal fm.gender1 'M'%}男{%else%}女{%endifequal%}<br>
 补充说明:{{fm.info1}}<br>
 需要帮助科目:{%if subject_list%}
@@ -138,7 +138,8 @@ h3.notexist{
           {%endfor%}
 {%else%}暂无科目
  {%endif%}
-<br>发表时间:{{fm.pub_date}}
+<br>发表时间:{{fm.pub_date}}<br>
+<a href="/employform/{{fm.id}}/">点此查看详细信息</a>
 </div>
 {%endfor%}
 {%else%}<h3><center>暂无表单</center></h3>

@@ -3,46 +3,115 @@
   <meta charset="utf-8">
   <title>Login Form</title>
 {% load staticfiles %}
-<link rel="stylesheet" href="{% static 'login/style.css' %}" />
+<style type="text/css">
+body{
+ margin:0px;
+ height:100%;
+ background:#DCDCDC;
+}
+#container{
+ border-radius:30px;
+ margin-left:35%;
+ width:30%;
+ height:100%;
+ background:#C9C9C9;
+ margin-top:75px;
+ border:5px solid #FFFFFF;
+}div.login{
+ height:100%;
+}h1{
+ text-align:center;
+ color:#336699;
+}#identity{
+ margin-left:74%;
+ width:65px;
+ height:27px;
+ border-radius:10px;
+}
+li{
+ list-style:none;
+ font-family:KaiTi;
+ font-size:23px;
+}#id_gender{
+  width:50px;
+}li.item{
+ margin-top:20px;
+ margin-right:50px;
+}
+input{
+ font-family:KaiTi;
+ font-size:22px;
+ border-radius:5px;
+ margin-left:5%;
+ margin-right:5%;
+ width:90%;
+ height:30px;
+}input.subset{
+ width:20%;
+ margin-top:10%;
+ margin-bottom:2px;
+ border-radius:10px;
+}#submit{
+ margin-left:5%;
+}
+ #reset{
+ margin-left:41%;
+ margin-right:5%;
+}input[type=text],input[type=password],input[type=email]{
+ background:#DDDDDD;
+ margin-top:30px;
+}
+input[type=text]:focus,input[type=password]:focus,input[type=email]:focus{
+ background:#FFFFFF;
+}a{
+ font-size:15px;
+}
+a:hover,a:link,a:visited{
+  text-decoration:none;
+  color:##3399FF;
+}
+li{
+ margin-left:
+ width:400px;
+}#select{
+ margin-left:20px;
+}#iden{
+ margin-left:30px;
+}
+li.success{color:green;font-size:15px;}
+li.warning{color:yellow;font-size:15px;}
+li.error{color:red;font-size:15px;}
+#login_help{
+ text-align:center;
+}
+</style>
 </head>
 <body>
-  <section class="container">
+  <div id="container">
     <div class="login">
       <h1><center>用户登录</center></h1>
-<!--
-	<ul>
-		<font color = "red" size = "4"><li>{{errors.username}}{{form.username.errors}}</li></font>
-		<font color = "red" size = "4"><li>{{errors.password}}{{form.password.errors}}</li></font>
-	</ul>
--->
         {% if messages %}
 	<ul class="messages">
     	{% for message in messages %}
     	<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
     	{% endfor %}
 	</ul>
-{% endif %}
-	{% if errors %}
-	{{errors}}
-	{% endif %}
+        {% endif %}
 	<form method="post">
-		{{form.username}}
-		{{form.password}}
-	<p class = "select">
-	<select name = "identity"> 
-<option value="parent">家长登录</option> 
-<option value="tutor">家教登录</option> 
-</select> </p>
-	
-<p class="remember_me"></p>
-        <p class="submit"><input type="submit" name="commit" value="确定"></p>
+	<ul id="login">	
+	<li class="item">{{form.username}}</li>
+	<li class="item">{{form.password}}</li>
+	<li class="item"><select id="identity" name = "identity"> 
+        <option value="parent">家长</option> 
+        <option value="tutor">家教</option> 
+</select> </li>
+      <li class="item"><input type="submit" class="subset" id="submit" name="commit" value="登录">
+      <input type="reset"  class="subset" id="reset" value="重置"></li>
       </form>
     </div>
-    <div class="login-help">
+    <div id="login_help">
       <p> <a href="">忘记密码?</a>|<a href="../register/">没有账号</a></p>
     </div>
-  </section>
-<div style="text-align:center;">
 </div>
 </body>
 </html>

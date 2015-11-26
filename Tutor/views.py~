@@ -6,8 +6,25 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from forms import *
 from django.db.models import Q
+from django.core.mail import EmailMessage
 from PIL import Image
-import math
+import hashlib
+university_choice = (("001","哈尔滨工业大学"), ("002","哈尔滨工程大学"),
+                    ("003","东北林业大学"),
+                    ("004","黑龙江大学"),
+                    ("005","哈尔滨理工大学"),
+                    ("006","东北农业大学"),
+                    ("007","哈尔滨医科大学"),
+                    ("008","黑龙江中医药大学"),
+                    ("010","哈尔滨师范大学"),
+                    ("011","哈尔滨商业大学"),
+                    ("012","哈尔滨学院"),
+                    ("013","黑龙江工程学院"),
+                    ("014","黑龙江科技学院"),
+                    ("015","哈尔滨德强商务学院"),
+                    ("016","哈尔滨体育学院"),
+                    ("017","黑龙江东方学院"),
+)
 def redirect_to_index(fn):
     def login_check(request,*args):
         if 'userid' in request.session:
@@ -33,9 +50,17 @@ def register(request):
             form = CreateParent(request.POST)
             if form.is_valid():
                 parent = form.save()
+		parent.is_active = True
+		parent.save()
                 request.session['userid'] = parent.userid
                 request.session['identity'] = "p"
                 messages.success(request,"注册成功")
+		url = 'id'+str(parent.userid)+'password'+hashlib.sha1(request.POST.get("password")).hexdigest()
+		html_content = '<p>尊敬的用户请点击<a href="http://localhost:8000/%s/">%s</a>激活邮件</p>'%(url,url)
+		subject = "邮箱激活"
+		msg = EmailMessage(subject,html_content,"2770837735@qq.com",['2770837735@qq.com'])
+		msg.content_subtype = "html" 
+		msg.send()
                 return HttpResponseRedirect('/index/')
         else:
             form = CreateTutor(request.POST)
@@ -46,7 +71,7 @@ def register(request):
                 messages.success(request,"注册成功")
                 return HttpResponseRedirect('/index/')
     else:
-        form = BaseCreateForm()
+        form = CreateParent()
     return render(request, "register.html", {'form':form})
 @csrf_exempt
 @redirect_to_index
@@ -58,10 +83,13 @@ def login(request):
                 username = request.POST.get('username')
                 try:
                     tutor = Tutor.objects.get(username=username)
-                    if(tutor.password==request.POST.get('password')):
- 			request.session['userid'] = tutor.userid
-                	request.session['identity'] = "t"
-                        return HttpResponseRedirect('/index/')
+                    if tutor.password==request.POST.get('password'):
+			if tutor.is_active:
+			    request.session['userid'] = tutor.userid
+                	    request.session['identity'] = "t"
+                            return HttpResponseRedirect('/index/')
+			else:
+			    messages.warnning(request,"该用户未被激活")
                     else:
                         messages.error(request,"用户名或密码错误")
                 except Tutor.DoesNotExist:
@@ -71,10 +99,13 @@ def login(request):
                 username = request.POST.get('username')
                 try:
                     parent = Parent.objects.get(username=username)
-                    if(parent.password==request.POST.get('password')):
-			request.session['userid'] = parent.userid
-                	request.session['identity'] = "p"
-                        return HttpResponseRedirect('/index/')
+                    if parent.password==request.POST.get('password'):
+			if parent.is_active:
+			    request.session['userid'] = parent.userid
+                	    request.session['identity'] = "p"
+                            return HttpResponseRedirect('/index/')
+			else:
+			    messages.warning(request,"该用户未被激活")
                     else:
                         messages.error(request,"用户名或密码错误")
                 except Parent.DoesNotExist:
@@ -98,6 +129,9 @@ def logout(request):
 @login_required
 def index(request):	
     userid = request.session["userid"]
+    university_dict = {}	
+    for item in university_choice:
+        university_dict[item[0]] = item[1]
     if request.session['identity'] == 'p':
 	if Tutor.objects.count()>5:
 	    tutorset = Tutor.objects.all()[:5]
@@ -185,6 +219,9 @@ def uploadimage(request):
 @csrf_exempt
 @login_required
 def search(request):
+    university_dict = {}
+    for item in university_choice:
+        university_dict[item[0]] = item[1]
     userid = request.session["userid"]
     identity = request.session['identity']
     if identity == "p":
@@ -235,6 +272,9 @@ def search(request):
 @csrf_exempt
 @login_required
 def publishform(request):
+    university_dict = {}
+    for item in university_choice:
+        university_dict[item[0]] = item[1]
     if Tutor.objects.count()>5:
     	tutors = Tutor.objects.all()[:5]
     else:
@@ -279,6 +319,9 @@ def publishform(request):
 @csrf_exempt
 @login_required
 def message(request):
+    university_dict = {}
+    for item in university_choice:
+        university_dict[item[0]] = item[1]
     userid = request.session['userid']
     identity = request.session['identity']
     if identity == "p":
@@ -291,8 +334,11 @@ def message(request):
 	    tutors = Tutor.objects.all()
 	if request.method == 'POST':
 	    if "delete" in request.POST:
-		PTMessages.objects.delete(id=request.POST.get("delete"))
-	        messages.success(request,"删除成功")
+		try:
+		    TPMessage.objects.get(ID=request.POST.get("delete")).delete()
+		    messages.success(request,"删除成功")
+		except TPMessage.DoesNotExist:
+		    pass
 	if user.employ_set.count()>4:
             forms = user.employ_set.all()[:4]
         else:
@@ -314,7 +360,7 @@ def message(request):
 	    tutors = Tutor.objects.all()
 	if request.method == 'POST':
 	    if "delete" in request.POST:
-		PTMessages.objects.delete(id=request.POST.get("delete"))
+		PTMessage.objects.get(ID=request.POST.get("delete")).delete()
 	        messages.success(request,"删除成功")
 	if Employ.objects.count()>4:
             forms = Employ.objects.all()[:4]
@@ -338,6 +384,7 @@ def showdetail(request,id):
 	subject_list = employ.subject.all()
 	validtime = employ.pub_date + datetime.timedelta(days=employ.valid_days)
 	return render_to_response("employ.html",locals())
+	
 @csrf_exempt
 @login_required
 def share(request):
@@ -348,7 +395,7 @@ def share(request):
     user = Tutor.objects.get(userid=userid)
     if request.method == "POST":
 	if "delete" in request.POST:
-	    Exp.objects.delete(id=request.POST.get('delete'))
+	    Exp.objects.get(id=request.POST.get('delete')).delete()
 	    messages.success(request,"删除成功")
 	    return HttpResponseRedirect("/index/")
 	elif "save" in request.POST:
@@ -363,3 +410,52 @@ def share(request):
 	form = ExpForm()
     forms = user.exp_set.all()
     return render_to_response("share.html",locals())
+@csrf_exempt
+@login_required
+def pinformation(request,userid):
+    if request.session['identity'] == "p":
+	return HttpResponseRedirect('/index/')
+    else:
+	user = Tutor.objects.get(userid=request.session['userid'])
+        parent = get_object_or_404(Parent,userid=userid)	
+	if request.method == "POST":
+	    if "ccommit" in request.POST:
+		TPComment.objects.create(from_user=user,to_user=parent,content=request.POST.get("content"))
+		messages.success(request,"评论成功") 	
+		return HttpResponseRedirect('/index/')
+	    elif "mcommit" in request.POST:
+		TPMessage.objects.create(from_user=user,to_user=parent,content=request.POST.get("content"))
+		messages.success(request,"留言成功") 	
+		return HttpResponseRedirect('/index/')
+            else:
+		pass
+	comment_list = parent.receivecomment.all()
+        message_list = parent.receivemessage.all() 
+        return render(request,"pinformation.html",locals()) 
+@csrf_exempt
+@login_required
+def tinformation(request,userid):
+    if request.session['identity'] == "t":
+	return HttpResponseRedirect('/index/')
+    else:
+	user = Parent.objects.get(userid=request.session['userid'])
+        tutor = get_object_or_404(Tutor,userid=userid)
+	university_dict = {}
+	for item in university_choice:
+	    university_dict[item[0]] = item[1]
+	subject_list = tutor.subject.all()
+	if request.method == "POST":
+	    if "ccommit" in request.POST:
+		PTComment.objects.create(from_user=user,to_user=tutor,content=request.POST.get("content"))
+		messages.success(request,"评论成功") 	
+		return HttpResponseRedirect('/index/')
+	    elif "mcommit" in request.POST:
+		PTMessage.objects.create(from_user=user,to_user=tutor,content=request.POST.get("content"))
+		messages.success(request,"留言成功") 	
+		return HttpResponseRedirect('/index/')
+            else:
+		pass
+	comment_list = tutor.receivecomment.all()
+        message_list = tutor.receivemessage.all() 
+        return render(request,"tinformation.html",locals()) 	
+	

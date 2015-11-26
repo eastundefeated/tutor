@@ -115,3 +115,11 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
     )
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.qq.com'
+
+EMAIL_HOST_USER='2770837735@qq.com'
+
+EMAIL_HOST_PASSWORD='umjuyxbfdmysddba'

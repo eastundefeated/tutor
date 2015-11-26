@@ -15,4 +15,6 @@ urlpatterns = [
     url(r'^message/$',message),
     url(r'^employform/(\d+)/$',showdetail),
     url(r'^share/$',share),
+    url(r'^information/p/(\d+)/$',pinformation),
+    url(r'^information/t/(\d+)/$',tinformation),
 ]   

@@ -1,0 +1,118 @@
+{%extends "tbase.html"%}
+{%block title%}{{parent.username}}的详细信息{%endblock%}
+{%block style%}
+body,#container,#left,#right{
+ background:#9C9C9C;
+}#center{
+ background:#DCDCDC;
+}
+li.info{
+ margin-top:3px;
+}#center{
+ height:auto;
+}
+#parentphoto{
+ margin-top:20px;
+ margin-left:40px;
+ width:200px;
+ height:180px;
+ float:left;
+}#information{
+ width:98%;
+ height:50%;
+ font-size:20px;
+ background:#999999;
+ border-radius:25px;
+ border:10px solid #FFFFFF;
+}#info{
+ float:left;
+}
+#message{
+ width:50%;
+ height:auto;
+ float:left;
+ border-right:5px #solid #FFFFFF;
+}
+#comment{
+ width:50%;
+ height:50%;
+ float:left;
+ border-left:5px #solid #FFFFFF;
+}div.addmessage{
+ margin-top:20px;
+ width:96%;
+ height:120px;
+ background:#C9C9C9;
+ border-radius:10px;
+}textarea.content{
+ margin-top:10px;
+ margin-left:15px;
+ font-size:15px;
+}input.submit{
+ float:right;
+ margin-right:10px;
+}img.publish{
+ width:30px;
+ height:30px;
+ border-radius:30px;
+}p.content{
+ font-size:15px;
+}div.message{
+ background:#9C9C9C;
+ height:auto;
+ margin-left:10px;
+ border-radius:10px;
+ border:2px solid #336699;
+ margin-top:5px;
+}
+{%endblock%}
+{%block center%}
+<div id="information">
+<h3><center>用户信息</center></h3>
+<img id="parentphoto" src="/static/image/p{{parent.userid}}.png" alt=""/>
+<ul id="info">
+<li class="info">用户名:{{parent.username}}</li>
+<li class="info">性别:{%ifequal parent.gender 'M'%}男{%else%}女{%endifequal%}</li>
+<li class="info">年龄:{%if parent.age %}{{parent.age}}{%endif%}</li>
+<li class="info">邮箱:{{parent.email}}</li>
+<li class="info">QQ:{%if parent.qq %}{{parent.qq}}{%endif%}</li>
+<li class="info">其他信息:{{parent.information}}</li>
+</ul>
+</div>
+<div id="message">
+<div class="addmessage">
+<form method="POST">
+<textarea name="content" class="content" cols="22" rows="4"  placeholder="请留言..."></textarea>
+<input type="submit" class="submit" name="mcommit" value="留言" />
+</form>
+</div>
+{%if message_list%}
+{%for message in message_list%}
+<div class="message">
+<p class="content">{{message.content|truncatewords:"30"}}</p>
+<br>
+<img class="publish" src="/static/image/t{{message.from_user.userid}}.png" />{{message.from_user.username}}
+&nbsp;&nbsp;&nbsp;{{message.pub_date}}
+</div>
+{%endfor%}
+{%endif%}
+</div>
+<div id="comment">
+<div class="addmessage">
+<form method="POST">
+<textarea class="content" name="content" cols="22" rows="4" placeholder="请评论..."></textarea> 
+<input type="submit" class="submit"  name="ccommit" value="评论" />
+</form>
+</div>
+{%if comment_list%}
+{%for comment in comment_list%}
+<div class="message">
+<p class="content">{{comment.content|truncatewords:"30"}}</p>
+<br>
+<img class="publish" src="/static/image/t{{comment.from_user.userid}}.png" />{{comment.from_user.username}}
+&nbsp;&nbsp;&nbsp;{{comment.pub_date}}
+</div>
+{%endfor%}
+{%endif%}
+</div>
+{%endblock%}

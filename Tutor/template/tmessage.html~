@@ -42,7 +42,11 @@ li{
 }li.tutorlist{
  margin-top:20px;
  margin-left:10px;
- list-style-type:upper-roman;
+ list-style-type:decimal;
+}img.message,img.comment{
+ width:30px;
+ height:30px;
+ border-radius:30px;
 }
 {%endblock%}
 {%block left%}
@@ -85,12 +89,13 @@ li{
 {%if tpmessage%}
 {%for message in tpmessage%}
 <div class="message" id="m{{message.ID}}">
-<a href="/information/p{{message.from_user.userid}}/"><img class="message" src="/static/image/p{{message.from_user.userid}}.png"/></a>
-来自<a href="/information/p{{message.from_user.userid}}/">{{message.from_user.username}}</a>
+<a href="/information/p/{{message.from_user.userid}}/"><img class="message" src="/static/image/p{{message.from_user.userid}}.png"/></a>
+来自<a href="/information/p/{{message.from_user.userid}}/">{{message.from_user.username}}</a>
 <p class="message">
 {{message.content}}
 </p>
 时间:{{message.pub_date}}
+<form method="POST"><button name="delete" value="{{message.id}}">删除</button></form>
 </div>{%endfor%}
 {%else%}
 <h2><center>暂无留言</center></h2>
@@ -101,12 +106,11 @@ li{
 {%if tpcomment %}
 {%for comment in tpcomment%}
 <div class="comment" id="c{{comment.ID}}">
-<a href="/information/p{{comment.from_user.userid}}/"><img class="comment" src="/static/image/p{{message.from_user.userid}}.png"/></a>
-来自<a href="/information/p{{comment.from_user.userid}}/">{{comment.from_user.username}}</a>
+<a href="/information/p/{{comment.from_user.userid}}/"><img class="comment" src="/static/image/p{{comment.from_user.userid}}.png"/></a>
+来自<a href="/information/p/{{comment.from_user.userid}}/">{{comment.from_user.username}}</a>
 <p class="message">
 {{comment.content}}
-</p>时间:{{message.pub_date}}
-<form method="POST"><button name="delete" value="{{message.id}}">删除</button></form>
+</p>时间:{{comment.pub_date}}
 </div>{%endfor%}
 {%else%}
 <h2><center>暂无评论</center></h2>

@@ -14,4 +14,7 @@ urlpatterns = [
     url(r'^admin/',include(admin.site.urls)),
     url(r'^message/$',message),
     url(r'^employform/(\d+)/$',showdetail),
+    url(r'^share/$',share),
+    url(r'^information/p/(\d+)/$',pinformation),
+    url(r'^information/t/(\dt)/$',tinformation),
 ]   

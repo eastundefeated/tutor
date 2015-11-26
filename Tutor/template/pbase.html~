@@ -79,7 +79,8 @@ a.titleline:hover{
 }li.success{color:green;font-size:15px;}
 li.warning{color:yellow;font-size:15px;}
 li.error{color:red;font-size:15px;}
- {%block style%}
+textarea{outline:none;resize:none;} 
+{%block style%}
  {%endblock%}
 </style>
 {%block script%}

@@ -72,12 +72,14 @@ class BaseProfile(models.Model):
             'unique':'该用户名已存在'
         })
     realname = models.CharField(verbose_name="真实姓名", max_length=30, blank=True)
-    password = models.CharField(max_length=30,
+    password = models.CharField(max_length=40,
         error_messages={
             'required':"密码不能为空",
         })
-    email = models.EmailField(verbose_name="电子邮箱",
+    is_active = models.BooleanField(default=False)
+    email = models.EmailField(verbose_name="电子邮箱",unique=True,
 	error_messages={
+            'unique':'该邮箱已被注册',
             'required':"邮箱不能为空",
 	    'invalid':"请输入核对邮箱格式",
         })

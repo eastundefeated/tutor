@@ -73,6 +73,10 @@ div.message,div.comment{
  border-radius:50px;
 }a{
  text-decoration:none;
+}img.userphoto{
+ width:30px;
+ height:30px;
+ border-radius:30px;
 }
 {%endblock%}
 {%block left%}
@@ -148,6 +152,8 @@ div.message,div.comment{
 <a href="/information/t/{{tutor.userid}}/"><img class="tutorphoto" src="/static/image/t{{tutor.userid}}.png"/></a>
 <a href="/information/t/{{tutor.userid}}/">{{tutor.username}}</a>
 评分:{{tutor.score}}
+大学:{%if tutor.university%}
+     {%for key,value in university_dict.items %}{%ifequal key tutor.university%}{{value}}{%endifequal%}{%endfor%}{%else%}未填{%endif%}
 </div>
 {%endfor%}
 {%endif%}
