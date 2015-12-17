@@ -26,7 +26,7 @@
  margin-top:2px;
  border:none;
  float:right;
-}.error_list{
+}.errorlist{
  color:red;
 }
 {%endblock%}

@@ -1,4 +1,4 @@
-{%extends "pbase.html"%}
+{%extends "base.html"%}
 {% load staticfiles %}
 {%block title%}个人主页{%endblock%}
 {%block style%}
@@ -73,10 +73,15 @@ div.message,div.comment{
  border-radius:50px;
 }a{
  text-decoration:none;
+}img.userphoto{
+ width:30px;
+ height:30px;
+ border-radius:30px;
 }
 {%endblock%}
 {%block left%}
-<img id="userphoto" src="/static/image/p{{userid}}.png" alt="用户头像"/> 
+<img id="userphoto" src="/static/image/{%if user.has_image%}{{user.userid}}{%else%}
+ {%ifequal user.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png" alt="用户头像"/> 
 <h2 id="username"><strong style="color:green;">{{username}}</strong>的个人信息</h2>
 <ul>
 <li class="info">姓名:{{user.realname}} </li>
@@ -87,71 +92,46 @@ div.message,div.comment{
 <a id="info" href="/info/">点此修改或完善资料</a>
 {%endblock%}
 {%block center%}
-<div id="message">
-<h2>最新留言</h2>
-{%if tpmessage%}
-{%for message in tpmessage%}
-<div class="message">
-<a href="/information/t{{message.from_user.userid}}/"><img class="userphoto" src="/static/image/t{{message.from_user.userid}}.png"/></a>
-<a href="/information/t{{message.from_user.userid}}/">{{message.from_user.username}}</a>
-<p>{{message.content| truncatewords:"30"}}</p>
-时间:{{message.pub_date}}
+<div>
+<h3>推荐表单</h3>
+{%if dict_subject%}
+{%for form,subject_list in dict_subject%}
+<div class="recommandform">
+{%if identity%}
+发布者:<a href="/information/{{form.tutor.userid}}/">{{form.tutor.username}}</a><br>
+擅长科目:{%if subject_list%}{%for suject in subject_list %}{{subject}}&nbsp;{%endfor%}{%else%}暂无科目{%endif%}
+<br>额外要求:{{form.info|truncatewords:"30"}}
+<br>薪水要求:{{form.salay}}
+<br>空余时间:{{form.from_time}}&nbsp;&nbsp;{{form.to_time}}<br>
+<a href="/askemploy/{{form.id}}/">点此查看详细信息</a>
+{%else%}
+发布者:<a href="/information/{{form.parent.userid}}/">{{form.parent.username}}</a><br>
+擅长科目:{%if subject_list%}{%for suject in subject_list %}{{subject}}&nbsp;{%endfor%}{%else%}暂无科目{%endif%}
+<br>家教要求:{{form.info2|truncatewords:"30"}}
+<br>薪水要求:{{form.salay}}
+<br>补课时间:{{form.from_time}}&nbsp;&nbsp;{{form.to_time}}<br>
+<a href="/employ/{{form.id}}/">点此查看详细信息</a>
+{%endif%}
 </div>
 {%endfor%}
 {%else%}
-<h3 class="notexist">暂无最新留言</h3>
+暂无表单推荐
 {%endif%}
-<a class="moreinfo" href="/message/">点此查看更多</a>
-</div>
-<div id="comment">
-<h2>最新评论</h2>
-{%if tpcomment%}
-{%for comment in tpcomment%}
-<div class="message">
-<a href="/information/t{{comment.from_user.userid}}/"><img class="userphoto" src="/static/image/t{{comment.from_user.userid}}.png"/></a>
-<a href="/information/t{{comment.from_user.userid}}/">{{comment.from_user.username}}</a>
-<p>{{comment.content| truncatewords:"30"}}</p>
-时间:{{comment.pub_date}}
-</div>
-{%endfor%}
-{%else%}
-<h3 class="notexist">暂无最新评论</h3>
-{%endif%}
-<a class="moreinfo" href="/message/">点此查看更多</a>
-</div>
 </div>
 {%endblock%}
 {%block right%}
-<div id="tutor_recommand">
-<a href="/publishform/"><h3><center>最新表单</center></h3></a>
-{%if dict_subject%}
-{%for fm,subject_list in dict_subject%}
-<div class="publishfm">
-发表时间:{{fm.pub_date}}<br>
-子女信息:{%ifequal fm.gender1 'M'%}男{%else%}女{%endifequal%}<br>
-补充说明:{{fm.info1}}<br>
-需要帮助科目:{%if subject_list%}
-          {%for subject in subject_list%}
-          {{subject}}&nbsp;
-          {%endfor%}
-{%else%}暂无科目
- {%endif%}
-</div>
-{%endfor%}
+{%if identity%}
+<h3>家教推荐</h3>
+{%else%}
+<h3>家教排行</h3>
 {%endif%}
-</div>
-<div id="tutor_list">
-<h3>家教排行榜</h4>
-{%if tutorset%}
+
+{%if tutorset %}
 {%for tutor in tutorset%}
-<div class="tutorlist">
-<a href="/information/t/{{tutor.userid}}/"><img class="tutorphoto" src="/static/image/t{{tutor.userid}}.png"/></a>
-<a href="/information/t/{{tutor.userid}}/">{{tutor.username}}</a>
-评分:{{tutor.score}}
-大学:{%if tutor.university%}
-     {%for key,value in university_dict.items %}{%ifequal key tutor.university%}{{value}}{%endifequal%}{%endfor%}{%else%}未填{%endif%}
+<div>评分:{{tutor.score}}<br>
+<a href="/information/{{tutor.userid}}/">用户名:&nbsp;{{tutor.username}}</a><br>
 </div>
 {%endfor%}
 {%endif%}
-</div>
+
 {%endblock%}

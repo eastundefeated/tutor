@@ -74,6 +74,10 @@ h3.notexist{
  background:#EFEFEF;
  margin-top:5px;
  border-radius:15px;
+}img.userphoto{
+ width:30px;
+ height:30px;
+ border-radius:30px;
 }
 {%endblock%}
 {%block left%}
@@ -88,49 +92,24 @@ h3.notexist{
 <a id="info" href="/info">点此修改或完善资料</a>
 {%endblock%}
 {%block center%}
-<div id="message">
-<h2>最新留言</h2>
-{%if ptmessage%}
-{%for message in ptmessage%}
-<div class="message">
-<a href="/information/p{{message.from_user.userid}}/"><img class="userphoto" src="/static/image/p{{message.from_user.userid}}.png"/></a>
-<a href="/information/p{{message.from_user.userid}}/">{{message.from_user.username}}</a>
-<p>{{message.content| truncatewords:"30"}}</p>
-时间:{{message.pub_date}}
-</div>
-{%endfor%}
-{%else%}
-<h3 class="notexist">暂无最新留言</h3>
-{%endif%}
-<a class="moreinfo" href="/message/">点此查看更多</a>
-</div>
-<div id="comment">
-<h2>最新评论</h2>
-{%if ptcomment%}
-{%for comment in ptcomment%}
-<div class="message">
-<a href="/information/p{{comment.from_user.userid}}/"><img class="userphoto" src="/static/image/p{{comment.from_user.userid}}.png"/></a>
-<a href="/information/t{{comment.from_user.userid}}/">{{comment.from_user.username}}</a>
-<p>{{comment.content| truncatewords:"30"}}</p>
-时间:{{comment.pub_date}}
-</div>
-{%endfor%}
-{%else%}
-<h3 class="notexist">暂无最新评论</h3>
-{%endif%}
-<a class="moreinfo" href="/message/">点此查看更多</a>
-</div>
+<div>
+{%if dict_%}
 </div>
 {%endblock%}
 {%block right%}
+<a href="/message/"><h5>您有{{commentcount}}条评论未读</h5></a>
+<a href="/message/"><h5>您有{{messagecount}}条留言未读</h5></a>
+<a href="/hire/"><h5>您有{{hirecount}}条雇佣请求未处理</h5></a>
 <div id="latestform">
-<a href="/search/"><h3><center>最新表单</center></h3></a>
+<a href="/search/"><h3><center>{%if identity%}家教{%else%}家长{%endif%}最新发布的表单</center></h3></a>
 {%if dict_subject%}
 {%for fm,subject_list in dict_subject%}
 <div class="publishfm">
-<a href="/information/p/{{fm.parent.userid}}/">{{fm.parent.username}}</a>
-<a href="/information/p/{{fm.parent.userid}}/"><img class="userphoto" src="/static/image/p{{fm.parent.userid}}.png" alt="暂无图像" /></a>
+{%if identity %}
+<a href="/information/{{fm.parent.userid}}/">{{fm.parent.username}}</a>
+<a href="/information/{{fm.parent.userid}}/"><img class="userphoto" src="/static/image/{%if user.has_image%}{{fm.parent.userid}}{%else%}{%ifequal fm.parent.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png" alt="暂无图像" /></a>
 子女信息:{%ifequal fm.gender1 'M'%}男{%else%}女{%endifequal%}<br>
+薪水:
 补充说明:{{fm.info1}}<br>
 需要帮助科目:{%if subject_list%}
           {%for subject in subject_list%}
@@ -138,6 +117,9 @@ h3.notexist{
           {%endfor%}
 {%else%}暂无科目
  {%endif%}
+{%else%}
+
+{%endif%}
 <br>发表时间:{{fm.pub_date}}<br>
 <a href="/employform/{{fm.id}}/">点此查看详细信息</a>
 </div>

@@ -1,0 +1,140 @@
+{%extends "base.html"%}
+{% load staticfiles %}
+{%block title%}个人主页{%endblock%}
+{%block style%}
+#userphoto{
+ width:200px;
+ height:180px;
+ margin-top:10%;
+ margin-left:5%;
+}li{
+ list-style:none;
+}
+#username{
+ text-align:center;
+}
+#logout{
+ margin-top:2.5%;
+ margin-right:20px;
+ float:right;
+}
+li.info{
+ list-style:none;
+ font-size:20px;
+ line-height:30px;
+}#info{
+ text-decoration:none;
+ text-align:center;
+ margin-left:10%;
+ font-size:20px;
+ margin-bottom:0;
+}
+#message,#comment{
+  line-height:3px;
+  border-radius:15px;
+  background:#C0C0C0;
+  width:96%;
+  height:46%;
+  margin-left:2%;
+}
+#message{
+ margin-top:2%;
+}
+#comment{
+ margin-top:2%;
+ margin-bottom:2%;
+}
+div.message,div.comment{
+ margin-top:0;
+ width:98%;
+ height:40%;
+}div.publishfm{
+ background:#C9C9C9;
+ width:90%;
+ border-radius:15px;
+ margin-bottom:2px;
+}
+#tutor_list,#tutor_recommand{
+ width:90%;
+ height:45%;
+ border-radius:10px;
+ background:#FFFFFF;
+}h3.notexist{
+  margin-left:40%;
+  margin-top:20%;
+}a.moreinfo{
+ text-decoration:none;
+ margin-left:80%;
+ margin-top:80%;
+ margin-bottom:1%;
+}img.tutorphoto{
+ width:50px;
+ height:50px;
+ border-radius:50px;
+}a{
+ text-decoration:none;
+}img.userphoto{
+ width:30px;
+ height:30px;
+ border-radius:30px;
+}
+{%endblock%}
+{%block left%}
+<img id="userphoto" src="/static/image/{%if user.has_image%}{{user.userid}}{%else%}
+ {%ifequal user.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png" alt="用户头像"/> 
+<h2 id="username"><strong style="color:green;">{{user.username}}</strong>的个人信息</h2>
+<ul>
+<li class="info">姓名:{{user.realname}} </li>
+<li class="info">年龄：{%if user.age%}{{user.age}}{%endif%}</li>
+<li class="info">性别: {%ifequal user.gender 'M'%}男{%else%}女{%endifequal%}</li>
+<li class="info">qq:{{user.qq}}</li>
+</ul>
+<a id="info" href="/info/">点此修改或完善资料</a>
+{%endblock%}
+{%block center%}
+<div>
+<h3>推荐表单</h3>
+{%if dict_subject%}
+{%for form,subject_list in dict_subject%}
+<div class="recommandform">
+{%if identity%}
+发布者:<a href="/information/{{form.tutor.userid}}/">{{form.tutor.username}}</a><br>
+擅长科目:{%if subject_list%}{%for subject in subject_list %}{{subject}}&nbsp;{%endfor%}{%else%}暂无科目{%endif%}
+<br>额外要求:{{form.info|truncatewords:"30"}}
+<br>薪水要求:{{form.salary}}
+<br>空余时间:{{form.from_time}}&nbsp;&nbsp;{{form.to_time}}<br>
+<a href="/askemploy/{{form.id}}/">点此查看详细信息</a>
+{%else%}
+发布者:<a href="/information/{{form.parent.userid}}/">{{form.parent.username}}</a><br>
+擅长科目:{%if subject_list%}{%for subject in subject_list %}{{subject}}&nbsp;{%endfor%}{%else%}暂无科目{%endif%}
+<br>家教要求:{{form.info2|truncatewords:"30"}}
+<br>薪水期望:{{form.salary}}
+<br>补课时间:{{form.from_time}}&nbsp;&nbsp;{{form.to_time}}<br>
+<a href="/employ/{{form.id}}/">点此查看详细信息</a>
+{%endif%}
+</div>
+{%endfor%}
+{%else%}
+暂无表单推荐
+{%endif%}
+</div>
+{%endblock%}
+{%block right%}
+<p>未读:<a href="/comment/">评论{{commentcount}}</a>
+<a href="/message/">留言{{messagecount}}</a>
+<a href="/hire/">雇佣请求{{hirecount}}</a>
+</p>
+{%if identity%}
+<h3>家教推荐</h3>
+{%else%}
+<h3>家教排行</h3>
+{%endif%}
+
+{%if tutorset %}
+{%for tutor in tutorset%}
+<div>评分:{{tutor.score}}<br>
+<a href="/information/{{tutor.userid}}/">用户名:&nbsp;{{tutor.username}}</a><br>
+</div>
+{%endfor%}
+{%endif%}
+{%endblock%}

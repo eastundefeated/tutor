@@ -3,6 +3,7 @@ from django.contrib import admin
 from views import *
 
 urlpatterns = [
+    url(r'^/$',mainpage),
     url(r'^login/$',login),
     url(r'^logout/$',logout),
     url(r'^register/$',register),
@@ -10,11 +11,13 @@ urlpatterns = [
     url(r'^info/$',myinfo),
     url(r'^upload/$',uploadimage),
     url(r'^search/$',search),
+    url(r'^search_tutor/',searchTutor),
     url(r'^publishform/$',publishform),
     url(r'^admin/',include(admin.site.urls)),
-    url(r'^message/$',message),
+    url(r'^message/(\d+)/$',message),
+    url(r'^comment/(\d+)/$',comment)
     url(r'^employform/(\d+)/$',showdetail),
     url(r'^share/$',share),
     url(r'^information/p/(\d+)/$',pinformation),
-    url(r'^information/t/(\dt)/$',tinformation),
+    url(r'^information/t/(\d+)/$',tinformation),
 ]   

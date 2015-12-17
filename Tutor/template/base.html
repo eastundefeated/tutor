@@ -3,6 +3,8 @@
 <meta charset="utf-8"/>
 {% load staticfiles %}
 <title>{%block title%}个人主页{%endblock%}</title>
+{%block extra%}
+{%endblock%}
 <style type="text/css">
 #page{
  margin:0 auto;
@@ -91,11 +93,16 @@ textarea{outline:none;resize:none;}
 <div id="header">
 <ul>
 <li class="titleline"><a class="titleline" href="/index">我的主页</a></li>
-<li class="titleline"><a class="titleline" href="/search">家教搜索</a></li>
-<li class="titleline"><a class="titleline" href="/publishform/">招募启示</a></li>
+{%if user.identity%}
+<li class="titleline"><a class="titleline" href="/search_tutor">家教搜索</a></li>
+{%endif%}
+<li class="titleline"><a class="titleline" href="/publishform/">表单发布</a></li>
+<li class="titleline"><a class="titleline" href="/search/">表单搜索</a></li>
+<li class="titleline"><a class="titleline" href="/share/">经历分享</a></li>
 <li class="titleline"><a class="titleline" href="/message/">留言板</a></li>
 </ul>
-<a href="/index/"><img id="photo" src="/static/image/p{{user.userid}}.png"  alt="用户图像" /></a>
+<a href="/index/"><img id="photo" src="/static/image/{%if user.has_image%}{{user.userid}}{%else%}
+ {%ifequal user.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png"  alt="用户图像" /></a>
 欢迎您！<strong style="color:green;">{{user.username}}</strong>
 <a href="/logout/"><button id="logout" name="logout">退出</button></a>
 </div>

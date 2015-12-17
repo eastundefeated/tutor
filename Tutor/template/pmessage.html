@@ -73,8 +73,8 @@ li{
 {%if tutors%}
 {%for tutor in tutors%}
 <div class="tutorlist">
-<a href="/information/t{{tutor.userid}}/"><img class="recommand" src="/static/image/t{{tutor.userid}}.png"/></a>
-<a href="/information/t{{tutor.userid}}/">{{tutor.username}}</a>
+<a href="/information/t/{{tutor.userid}}/"><img class="recommand" src="/static/image/t{{tutor.userid}}.png"/></a>
+<a href="/information/t/{{tutor.userid}}/">{{tutor.username}}</a>
 评分:{{tutor.score}}
 </div>
 {%endfor%}

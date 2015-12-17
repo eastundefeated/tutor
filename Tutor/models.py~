@@ -2,144 +2,84 @@
 from django.db import models
 subject_choice = (('Math', '数学'),('Chinese', '语文'),("English", '英语'),
                     ('Physic', "物理"), ('Chemistry', '化学'), ('Biology', '生物'))
-dict_subject = {
-'Math':'数学','Chinese':'语文',"English":'英语','Physic':"物理",'Chemistry':'化学','Biology':'生物'
-}
+dict_subject = {'Math':u'数学','Chinese':u'语文',"English":u'英语','Physic':u"物理",'Chemistry':u'化学','Biology':u'生物'}
 grade_choice = (('Pr','小学'), ('J1', '初一'), ('J2', '初二'), ('J3','初三'),
                     ('H1', '高一'), ('H2', '高二'), ('H3', '高三'))
-dict_grade = {
-'Pr':'小学','J1':"初一","J2":"初二","J3":"初三","H1":"高一","H2":"高二","H3":"高三"
-}
+dict_grade = {'Pr':u'小学','J1':u"初一","J2":u"初二","J3":u"初三","H1":u"高一","H2":u"高二","H3":u"高三"}
 age_choice = (('0','5岁以下'),('1','5岁至12岁'),('2','12至16岁'),('3','16岁以上'))
 gender_choice = (('M', '男'), ('F', '女'))
 state_choice = (('B', '忙碌'), ('F', '空闲'))
-university_choice = (("001","哈尔滨工业大学"), ("002","哈尔滨工程大学"),
-                    ("003","东北林业大学"),
-                    ("004","黑龙江大学"),
-                    ("005","哈尔滨理工大学"),
-                    ("006","东北农业大学"),
-                    ("007","哈尔滨医科大学"),
-                    ("008","黑龙江中医药大学"),
-                    ("010","哈尔滨师范大学"),
-                    ("011","哈尔滨商业大学"),
-                    ("012","哈尔滨学院"),
-                    ("013","黑龙江工程学院"),
-                    ("014","黑龙江科技学院"),
-                    ("015","哈尔滨德强商务学院"),
-                    ("016","哈尔滨体育学院"),
-                    ("017","黑龙江东方学院"),
+university_choice = (("001","哈尔滨工业大学"), ("002","哈尔滨工程大学"),("003","东北林业大学"),
+                    ("004","黑龙江大学"),("005","哈尔滨理工大学"),("006","东北农业大学"),
+                    ("007","哈尔滨医科大学"),("008","黑龙江中医药大学"),("010","哈尔滨师范大学"),
+                    ("011","哈尔滨商业大学"),("012","哈尔滨学院"),("013","黑龙江工程学院"),
+                    ("014","黑龙江科技学院"),("015","哈尔滨德强商务学院"),("016","哈尔滨体育学院"),("017","黑龙江东方学院"),
 )
+
 # Create your models here.
 class Subject(models.Model):
     subject = models.CharField(max_length=10, choices=subject_choice)
     grade = models.CharField(max_length=10, choices=grade_choice)
     def __unicode__(self):
-	if self.grade == "Pr":
-		strgrade = u"小学"
-	elif self.grade == "J1":
-		strgrade = u"初一"
-	elif self.grade == "J2":
-		strgrade = u"初二"
-	elif self.grade == "J3":
-		strgrade = u"初三"
-	elif self.grade == "H1":
-		strgrade = u"高一"
-	elif self.grade == "H2":
-		strgrade = u"高二"
-	elif self.grade == "H3":
-		strgrade = u"高三"
-	if self.subject == "Math":
-		strsubject = u"数学"
-	elif self.subject == "Chinese":
-		strsubject = u"语文"
-	elif self.subject == "English":
-		strsubject = u"英语"
-	elif self.subject == "Chemistry":
-		strsubject = u"化学"
-	elif self.subject == "Biology":
-		strsubject = u"生物"
-	elif self.subject == "Physic":
-		strsubject = u"物理"
-        return strgrade+ strsubject
+        return dict_grade[self.grade]+ dict_subject[self.subject]
     class Meta:
 	unique_together = (("subject"),("grade"))
         ordering = ["grade","subject"]
-class BaseProfile(models.Model):
+class User(models.Model):
+    #共享信息
     userid = models.AutoField(primary_key=True)
-    username = models.CharField(verbose_name="用户名", max_length=30, unique=True,
-        error_messages={
-            'required':"用户名不能为空",
-            'unique':'该用户名已存在'
-        })
+    username = models.CharField(verbose_name="用户名", max_length=30, unique=True,)
     realname = models.CharField(verbose_name="真实姓名", max_length=30, blank=True)
-    password = models.CharField(max_length=40,
-        error_messages={
-            'required':"密码不能为空",
-        })
+    password = models.CharField(max_length=40,)
+    has_image = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
-    email = models.EmailField(verbose_name="电子邮箱",unique=True,
-	error_messages={
-            'unique':'该邮箱已被注册',
-            'required':"邮箱不能为空",
-	    'invalid':"请输入核对邮箱格式",
-        })
+    email = models.EmailField(verbose_name="电子邮箱",unique=True,)
     gender = models.CharField(verbose_name="性别", max_length=2, choices=gender_choice, default="M")
     age = models.IntegerField(verbose_name="年龄", null=True, blank=True)
     phone = models.CharField(verbose_name="电话", max_length=13, blank=True)
     qq = models.CharField(verbose_name="QQ", max_length=13, blank=True)
     information = models.TextField(verbose_name="补充信息", blank=True)
-    def __unicode__(self):
-        return self.username
-    class Meta:
-        ordering = ["username"]
-class Tutor(BaseProfile):
-    score = models.FloatField(verbose_name="评分", default=0.0)
+    identity = models.BooleanField(verbose_name="identity",default=True)
+    #家教信息
+    count_comment = models.IntegerField(default=0)
+    total_score = models.IntegerField(default=0)
+    score = models.FloatField(verbose_name="评分", default=0)
     state = models.CharField(verbose_name="状态", max_length=2, choices=state_choice, default='F')
     university = models.CharField(verbose_name="大学", max_length=30, blank=True, choices = university_choice)
     major = models.CharField(verbose_name="专业", max_length=40, blank=True)
     subject = models.ManyToManyField(Subject,verbose_name="科目", blank=True)
-    class Meta:
-	ordering = ["score","username"]
-class Parent(BaseProfile):
+    #家长信息
     address = models.TextField(verbose_name="地址",blank=True)
-class BaseMessage(models.Model):
-    ID = models.AutoField(primary_key=True)
-    content = models.TextField(blank=True)
-    pub_date = models.DateTimeField(auto_now_add=True)
+    def __unicode__(self):
+        return self.username
     class Meta:
-        ordering = ["-pub_date"]
-class PTMessage(BaseMessage):
-    from_user = models.ForeignKey(Parent, related_name="sendemessage")
-    to_user = models.ForeignKey(Tutor, related_name="receivemessage")
+        ordering = ["username"]
+
+#雇佣关系中间类
+class EmployRelationship(models.Model):
+    parent = models.ForeignKey(User,related_name="employer")
+    tutor = models.ForeignKey(User,related_name="employee")
+    pub_date = models.DateTimeField(auto_now_add=True)
+    is_valid = models.BooleanField(default=True)
+    class Meta:
+	ordering = ['-pub_date']
     def __unicode__(self):
-        return self.from_user.username + " to " + self.to_user.username
-class TPMessage(BaseMessage):
-    from_user = models.ForeignKey(Tutor, related_name="sendemessage")
-    to_user = models.ForeignKey(Parent, related_name="receivemessage")
-    def __unicode__(self):
-        return self.from_user.username + " to " + self.to_user.username
-class PTComment(BaseMessage):
-    from_user = models.ForeignKey(Parent, related_name="sendecomment")
-    to_user = models.ForeignKey(Tutor, related_name="receivecomment")
-    def __unicode__(self):
-        return self.from_user.username + " to " + self.to_user.username
-class TPComment(BaseMessage):
-    from_user = models.ForeignKey(Tutor, related_name="sendecomment")
-    to_user = models.ForeignKey(Parent, related_name="receivecomment")
-    def __unicode__(self):
-        return self.from_user.username + " to " + self.to_user.username
+	return self.parent.username + " has hired "+self.tutor.username
+
 
 class Employ(models.Model):
-    parent = models.ForeignKey(Parent,null=True,blank=True)
+    parent = models.ForeignKey(User,blank=True,null=True)
     #子女信息
+    is_visible = models.BooleanField(default=True)
     age = models.CharField(verbose_name="子女年龄", max_length = 2,choices=age_choice,default="3")
     gender1 = models.CharField(verbose_name="子女性别", max_length=2, choices=gender_choice,default="M")
-    subject = models.ManyToManyField(Subject,verbose_name="科目")
+    subject = models.ManyToManyField(Subject,verbose_name="辅导科目")
     info1 = models.TextField(verbose_name="子女额外信息描述", blank = True,)
     #家教信息
     gender2 = models.CharField(verbose_name="家教性别要求", max_length = 2,choices = (("N","男女不限"),("M","男"),("F","女")),default = "N")
     site = models.CharField(verbose_name="教学地点",max_length=10,choices=(('home',"家教上门"),('school',"学生上门")),default="home")
-    time = models.CharField(verbose_name="教学时间段",max_length=10,choices=(('8-11',"8:00-11:30"),('14-17',"14:00-17:30"),('19-21',"19:00-21:30")),default="8-11")
+    from_time = models.DateField(verbose_name="起始时间")
+    to_time = models.DateField(verbose_name="结束时间")
     info2 = models.TextField(verbose_name="家教额外要求", blank = True)
     salary = models.FloatField(verbose_name="薪水(元/小时)",null=True, blank=True)
     info3 = models.TextField(verbose_name="补充说明",blank = True)
@@ -149,8 +89,25 @@ class Employ(models.Model):
         ordering = ['-pub_date',"salary"]
     def __unicode__(self):
         return self.parent.username+str(self.pub_date)
+#家教发布求职表单
+class AskEmploy(models.Model):
+    tutor = models.ForeignKey(User,blank=True,null=True)
+    is_visible = models.BooleanField(default=True)
+    from_time = models.DateField(verbose_name="起始时间")
+    to_time = models.DateField(verbose_name="结束时间")
+    info = models.TextField(verbose_name="额外要求")
+    pub_date = models.DateTimeField(auto_now_add=True)
+    salary = models.FloatField(verbose_name="薪水(元/小时)",null=True, blank=True)
+    subject = models.ManyToManyField(Subject,verbose_name="科目")
+    valid_days = models.IntegerField(verbose_name="表单有效期(天)",default=30)
+    class Meta:
+	ordering= ['-pub_date']
+    def __unicode__(self):
+	return self.tutor.username + str(self.pub_date)
+
+#家教经历分享
 class Exp(models.Model):
-    tutor = models.ForeignKey(Tutor,blank=True,null=True)
+    user = models.ForeignKey(User,blank=True,null=True)
     title = models.CharField(verbose_name="标题",max_length=20,
       error_messages={
 	'required':"标题不能为空",
@@ -161,3 +118,37 @@ class Exp(models.Model):
 	ordering = ['-pub_date']
     def __unicode__(self):
 	return self.title
+#留言
+class Message(models.Model):
+    is_read = models.BooleanField(default=False)
+    from_user = models.ForeignKey(User,related_name="sendmessage")
+    to_user = models.ForeignKey(User,related_name="receivemessage")
+    content = models.TextField(verbose_name="内容",blank=True)
+    pub_date = models.DateTimeField(auto_now_add=True)
+    class Meta:
+	ordering = ['-pub_date']
+    def __unicode__(self):
+	return self.from_user.username + " send message to "+self.to_user.username
+#评论
+class Comment(models.Model):
+    is_read = models.BooleanField(default=False)
+    from_user = models.ForeignKey(User,related_name="sendcomment")
+    to_user = models.ForeignKey(User,related_name="receivecomment")
+    content = models.TextField(verbose_name="内容",blank=True)
+    pub_date = models.DateTimeField(auto_now_add=True)
+    score = models.IntegerField(default=0)
+    class Meta:
+	ordering = ['-pub_date']
+    def __unicode__(self):
+	return self.from_user.username + " give a comment to "+self.to_user.username
+#寻求雇佣
+class Hire(models.Model):
+    is_read = models.BooleanField(default=False)
+    from_user = models.ForeignKey(User,related_name="hire_from")
+    to_user = models.ForeignKey(User,related_name="hire_to")   
+    pub_date = models.DateTimeField(auto_now_add=True)
+    class Meta:
+	ordering = ['-pub_date']
+    def __unicode__(self):
+	return self.from_user.username + " have a relationship with "+self.to_user.username
+

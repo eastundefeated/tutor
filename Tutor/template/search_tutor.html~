@@ -1,0 +1,24 @@
+{%extends "base.html"%}
+{%block left%}
+<form method="POST">
+<ul>
+{{form.as_ul}}
+<li><input type="submit" value="搜索"/></li>
+<li><input type="reset" value="重置"/></li>
+</ul>
+</form>
+{%endblock%}
+{%block center%}
+{%if tutors%}
+{%for tutor in tutors%}
+<div>
+<a href="/information/{{tutor.userid}}/">{{tutor.username}}</a>
+<img href="/static/image/{%if tutor.has_image%}{{tutor.userid}}{%else%}{%ifequal tutor.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png"/>
+<br>评分:{{tutor.score}}
+<br>擅长科目:{%for subject in tutor.subject.all%}{{subject}}&nbsp;{%endfor%}
+</div>
+{%endfor%}
+{%else%}
+暂无家教
+{%endif%}
+{%endblock%}

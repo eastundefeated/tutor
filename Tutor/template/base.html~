@@ -26,10 +26,7 @@ div{
   width:auto;
   height:3%;
   clear:both;
-}li{
- list-style:none;
-}
-li.titleline{
+}li.titleline{
  float:left;
  margin-left:30px;
  margin-top:55px;
@@ -70,7 +67,7 @@ a.titleline:hover{
  border-radius:5px;
  float:left;
  width:62%;
- height:auto;
+ height:100%;
  background:#DCDCDC;
 }
 #right{
@@ -82,24 +79,30 @@ a.titleline:hover{
 }li.success{color:green;font-size:15px;}
 li.warning{color:yellow;font-size:15px;}
 li.error{color:red;font-size:15px;}
-textarea{outline:none;resize:none;}
- {%block style%}
+textarea{outline:none;resize:none;} 
+{%block style%}
  {%endblock%}
+</style>
 {%block script%}
 {%endblock%}
-</style>
+</script>
 </head>
 <body id="page">
 <div id="header">
 <ul>
 <li class="titleline"><a class="titleline" href="/index">我的主页</a></li>
-<li class="titleline"><a class="titleline" href="/search">表单搜索</a></li>
+{%if user.identity%}
+<li class="titleline"><a class="titleline" href="/search_tutor">家教搜索</a></li>
+{%endif%}
+<li class="titleline"><a class="titleline" href="/publishform/">表单发布</a></li>
+<li class="titleline"><a class="titleline" href="/search/">表单搜索</a></li>
 <li class="titleline"><a class="titleline" href="/share/">经历分享</a></li>
 <li class="titleline"><a class="titleline" href="/message/">留言板</a></li>
 </ul>
-<a href="/index/"><img id="photo" src="/static/image/t{{user.userid}}.png"  alt="用户图像" /></a>
+<a href="/index/"><img id="photo" src="/static/image/{%if user.has_image%}{{user.userid}}{%else%}
+ {%ifequal user.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png"  alt="用户图像" /></a>
 欢迎您！<strong style="color:green;">{{user.username}}</strong>
-<a href="/logout/"><button id="logout" name="loggout">退出</button></a>
+<a href="/logout/"><button id="logout" name="logout">退出</button></a>
 </div>
 <div id="container">
 {% if messages %}

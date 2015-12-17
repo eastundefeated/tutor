@@ -92,7 +92,7 @@ li{
 {{message.content}}
 </p>
 时间:{{message.pub_date}}
-<form method="POST"><button name="delete" value="{{message.id}}">删除</button></form>
+<form method="POST"><button name="delete" value="{{message.ID}}">删除</button></form>
 </div>{%endfor%}
 {%else%}
 <h2><center>暂无留言</center></h2>

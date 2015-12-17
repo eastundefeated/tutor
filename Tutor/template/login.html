@@ -3,88 +3,6 @@
   <meta charset="utf-8">
   <title>Login Form</title>
 {% load staticfiles %}
-<style type="text/css">
-body{
- margin:0px;
- height:100%;
- background:#DCDCDC;
-}
-#container{
- border-radius:30px;
- margin-left:35%;
- width:30%;
- height:100%;
- background:#C9C9C9;
- margin-top:75px;
- border:5px solid #FFFFFF;
-}div.login{
- height:100%;
-}h1{
- text-align:center;
- color:#336699;
-}#identity{
- margin-left:74%;
- width:65px;
- height:27px;
- border-radius:10px;
-}
-li{
- list-style:none;
- font-family:KaiTi;
- font-size:23px;
-}#id_gender{
-  width:50px;
-}li.item{
- margin-top:20px;
- margin-right:50px;
-}
-input{
- font-family:KaiTi;
- font-size:22px;
- border-radius:5px;
- margin-left:5%;
- margin-right:5%;
- width:90%;
- height:30px;
-}input.subset{
- width:20%;
- margin-top:10%;
- margin-bottom:2px;
- border-radius:10px;
-}#submit{
- margin-left:5%;
-}
- #reset{
- margin-left:41%;
- margin-right:5%;
-}input[type=text],input[type=password],input[type=email]{
- background:#DDDDDD;
- margin-top:30px;
-}
-input[type=text]:focus,input[type=password]:focus,input[type=email]:focus{
- background:#FFFFFF;
-}a{
- font-size:15px;
-}
-a:hover,a:link,a:visited{
-  text-decoration:none;
-  color:##3399FF;
-}
-li{
- margin-left:
- width:400px;
-}#select{
- margin-left:20px;
-}#iden{
- margin-left:30px;
-}
-li.success{color:green;font-size:15px;}
-li.warning{color:yellow;font-size:15px;}
-li.error{color:red;font-size:15px;}
-#login_help{
- text-align:center;
-}
-</style>
 </head>
 <body>
   <div id="container">
@@ -98,19 +16,15 @@ li.error{color:red;font-size:15px;}
 	</ul>
         {% endif %}
 	<form method="post">
-	<ul id="login">	
-	<li class="item">{{form.username}}</li>
-	<li class="item">{{form.password}}</li>
-	<li class="item"><select id="identity" name = "identity"> 
-        <option value="parent">家长</option> 
-        <option value="tutor">家教</option> 
-</select> </li>
+	<ul>
+	{{form.as_ul}}
       <li class="item"><input type="submit" class="subset" id="submit" name="commit" value="登录">
       <input type="reset"  class="subset" id="reset" value="重置"></li>
+        </ul>
       </form>
     </div>
     <div id="login_help">
-      <p> <a href="">忘记密码?</a>|<a href="../register/">没有账号</a></p>
+      <p> <a href="/forgetpassword/">忘记密码?</a>|<a href="../register/">没有账号</a></p>
     </div>
 </div>
 </body>
