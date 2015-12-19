@@ -1,0 +1,167 @@
+{%extends "base.html"%}
+{%block title%}{{u.username}}的详细信息{%endblock%}
+{%block style%}
+body,#container,#left,#right{
+ background:#9C9C9C;
+}#center{
+ background:#DCDCDC;
+}
+li.info{
+ margin-top:3px;
+}#center{
+ height:auto;
+}
+#parentphoto{
+ margin-top:20px;
+ margin-left:40px;
+ width:200px;
+ height:180px;
+ float:left;
+}#information{
+ width:98%;
+ height:50%;
+ font-size:20px;
+ background:#999999;
+ border-radius:25px;
+ border:10px solid #FFFFFF;
+}#info{
+ float:left;
+}
+#message{
+ width:50%;
+ height:auto;
+ float:left;
+ border-right:5px #solid #FFFFFF;
+}
+#comment{
+ width:50%;
+ height:50%;
+ float:left;
+ border-left:5px #solid #FFFFFF;
+}div.addmessage{
+ margin-top:20px;
+ width:96%;
+ height:120px;
+ background:#C9C9C9;
+ border-radius:10px;
+}textarea.content{
+ margin-top:10px;
+ margin-left:15px;
+ font-size:15px;
+}input.submit{
+ float:right;
+ margin-right:10px;
+}img.publish{
+ width:30px;
+ height:30px;
+ border-radius:30px;
+}p.content{
+ font-size:15px;
+}div.message{
+ background:#9C9C9C;
+ height:auto;
+ margin-left:10px;
+ border-radius:10px;
+ border:2px solid #336699;
+ margin-top:5px;
+}
+{%endblock%}
+{%block center%}
+<div><center><h3>用户信息</h3></center>
+<img id="userphoto" src="/static/image/{%if u.has_image%}{{u.userid}}{%else%}
+{%ifequal u.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png"  alt="用户图像" />
+<ul>
+<li>用户名:{{u.username}}</li>
+<li>性别:{%ifequal u.gender 'M'%}男{%else%}女{%endifequal%}</li>
+<li>年龄:{%if u.age%}{{u.age}}{%endif%}
+<li>邮箱:{%if user%}{{u.email}}{%else%}<a href="/login/">请登录后查看</a></li>{%endif%}
+<li>电话:{%if user%}{{u.phone}}{%else%}<a href="/login/">请登录后查看</a></li>{%endif%}
+<li>QQ:{%if user%}{{u.qq}}{%else%}<a href="/login/">请登录后查看</a></li>{%endif%}
+<li>额外信息:{{u.information}}</li>
+{%if u.identity%}
+<li>地址:{{u.address}}</li>
+{%else%}
+<li>评分:{{u.score}}</li>
+{%if u.subject.all%}
+<li>擅长科目:{%for subject in u.subject.all%}{{subject}}&nbsp;{%endfor%}
+{%endif%}
+<li>大学:{%for k,v in university.items%}{%ifequal k u.university%}{{v}}{%endifequal%}{%endfor%}</li>
+<li>专业:{{u.major}}</li>
+{%endif%}
+{%if can_hire%}<form method="POST"><input type="submit" name="hire" value="雇佣"/></form>{%endif%}
+</div>
+<div>
+<form method="POST">
+<textarea name="message" rows=5 cols=30 placeholder="请在此留言"></textarea>
+<input type="submit" {%if user%}{%else%} disabled="disabled"{%endif%} name="mess" value="提交"/>
+</form>
+</div>
+<div>
+<h2><center>全部留言</center></h2>
+{%if mess%}
+{%for m in mess%}
+<div>
+留言:<a href="/information/{{m.from_user.userid}}/">{{m.from_user.username}}</a>
+<br>内容:{{m.content}}
+<br>发布时间:{{m.pub_date}}
+</div>
+{%endfor%}
+<div class="pagination">
+    <span class="step-links">
+        {% if mess.has_previous %}
+            <a href="?page={{ mess.previous_page_number}}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ mess.number }} of {{ mess.paginator.num_pages }}.
+        </span>
+
+        {% if mess.has_next %}
+            <a href="?page={{ mess.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+{%else%}
+暂无留言
+{%endif%}
+</div>
+<div>
+{%if user%}
+{%if can_comment%}
+<form method="POST">
+<p>{{form.as_p}}
+</p>
+<input type="submit" name="comment" value="评论"/>
+</form>
+{%endif%}
+{%endif%}
+<h2><center>全部评论</center></h2>
+{%if comments%}
+{%for m in comments%}
+<div>
+评论者:<a href="/information/{{m.from_user.userid}}/">{{m.from_user.username}}</a>
+<br>评分:{{m.score}}
+<br>内容:{{m.content}}
+<br>发布时间:{{m.pub_date}}
+</div>
+{%endfor%}
+<div class="pagination">
+    <span class="step-links">
+        {% if comments.has_previous %}
+            <a href="?page1={{ comments.previous_page_number}}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ comments.number }} of {{ comments.paginator.num_pages }}.
+        </span>
+
+        {% if comments.has_next %}
+            <a href="?page1={{ comments.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+{%else%}
+暂无评论
+{%endif%}
+</div>
+{%endblock%}

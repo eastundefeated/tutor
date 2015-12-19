@@ -1,0 +1,14 @@
+{%extends "base.html"%}
+{%block center%}
+发表人:<a href="/information/{{employ.user.userid}}/">{{employ.user.username}}</a>
+<img  src="/static/image/{%if user.has_image%}{{user.userid}}{%else%}
+{%ifequal user.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png"  alt="用户图像" /></a>
+发表时间:{{employ.pub_date}}
+<div>
+<br>擅长科目:{%if employ.subject.all%}{%for subject in employ.subject.all%}{{subject}}&nbsp;{%endfor%}{%endif%}
+<br>补课起始时间:{{employ.from_time}}
+<br>补课结束时间:{{employ.to_time}}
+<br>薪水(元/小时):{%if employ.salary%}{{employ.salary}}{%else%}未填{%endif%}
+<br>补充说明:{{employ.info}}
+</div>
+{%endblock%}

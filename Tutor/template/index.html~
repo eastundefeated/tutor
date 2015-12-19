@@ -81,8 +81,8 @@ div.message,div.comment{
 {%endblock%}
 {%block left%}
 <img id="userphoto" src="/static/image/{%if user.has_image%}{{user.userid}}{%else%}
- {%ifequal user.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png" alt="用户头像"/> 
-<h2 id="username"><strong style="color:green;">{{username}}</strong>的个人信息</h2>
+{%ifequal user.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png" alt="用户头像"/> 
+<h2 id="username"><strong style="color:green;">{{user.username}}</strong>的个人信息</h2>
 <ul>
 <li class="info">姓名:{{user.realname}} </li>
 <li class="info">年龄：{%if user.age%}{{user.age}}{%endif%}</li>

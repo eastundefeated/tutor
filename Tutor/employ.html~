@@ -8,7 +8,7 @@
 子女信息:
 <br>年龄:{{employ.age}}
 <br>年龄:{{employ.age}}
-<br>性别:{%ifequal employ.gender1 'M'%}男{%else%}女{%endifequal%}
+<br>性别:{%ifequal employ.gender1 'M'}男{%else%}女{%endifequal%}
 <br>需要辅导科目:{%if employ.subject.all%}{%for subject in employ.subject.all%}{{subject}}&nbsp;{%endfor%}{%endif%}
 <br>子女额外信息:{{employ.info1}}
 <br>家教的要求:

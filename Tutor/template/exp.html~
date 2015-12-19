@@ -1,0 +1,38 @@
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>经历分享</title>
+</head>
+<body>
+{%if user%}欢迎您!<a href="/index/">{{user.username}}</a>{%else%}<a href="/login/">登录</a><a href="/register/">注册</a>{%endif%}
+<div>
+{%if mess %}
+<div>
+{%for m in mess%}
+<br>发布人:<a href="/information/{{m.user.userid}}/">{{m.user.username}}</a>
+<br>发布时间:{{m.pub_date}}
+<br>标题:{{m.title}}
+<br>内容:{{m.content}}
+</div>
+{%endfor%}
+<div class="pagination">
+    <span class="step-links">
+        {% if mess.has_previous %}
+            <a href="?page={{ mess.previous_page_number}}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ mess.number }} of {{ mess.paginator.num_pages }}.
+        </span>
+
+        {% if mess.has_next %}
+            <a href="?page={{ mess.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+{%else%}
+暂无经历分享
+{%endif%}
+</div>
+</body>
+<html>

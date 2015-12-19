@@ -119,9 +119,9 @@ li{
 		<li class="item">{{form.password}}</li>
 		<li class="item">{{form.password_confirm}}</li>
 		<li class="item">{{form.email}}</li>
-		<li id="select" class="item">性别&nbsp{{form.gender}}<label id="iden">身份&nbsp</label><select id="identity" name="identity"> 
-		<option value="parent">家长</option> 
-		<option value="tutor">家教</option> 
+		<li id="gender" class="item">性别&nbsp{{form.gender}}<label id="iden">身份&nbsp</label><select id="identity" name="identity"> 
+		<option value=True>家长</option> 
+		<option value=False>家教</option> 
 		</select><li> 
         <li class="item">
         <input id="submit" class="subset" type="submit" name="commit" value="确定"/>
@@ -129,7 +129,7 @@ li{
  	</ul>
       </form>
     </div>
-    <div id="login_help"><a id="tologin" href="/login/">已有账户?</a>
+    <div id="login_help"><a id="tologin" href="/login/">已有账户?</a>|<a  href="/forgetpassword/">忘记密码?</a>
  </div>
 </body>
 </html>

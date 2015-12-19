@@ -51,35 +51,6 @@ li{
 
 {%block center%}
 <div>
-<h2><center>未读留言</center></h2>
-{%if newmess%}
-{%for m in newmess%}
-<div>
-留言者:<a href="/information/{{m.from_user.userid}}/">{{m.from_user.username}}</a>
-<br>内容:{{m.content}}
-<br>发布时间:{{m.pub_date}}
-</div>
-{%endfor%}
-<div class="pagination">
-    <span class="step-links">
-        {% if newmess.has_previous %}
-            <a href="?page2={{ newmess.previous_page_number}}{{url2}}">previous</a>
-        {% endif %}
-
-        <span class="current">
-            Page {{ newmess.number }} of {{ newmess.paginator.num_pages }}.
-        </span>
-
-        {% if newmess.has_next %}
-            <a href="?page2={{ newmess.next_page_number }}{{url2}}">next</a>
-        {% endif %}
-    </span>
-</div>
-{%else%}
-暂无最新留言
-{%endif%}
-</div>
-<div>
 <h2><center>全部留言</center></h2>
 {%if mess%}
 {%for m in mess%}
@@ -87,12 +58,13 @@ li{
 留言者:<a href="/information/{{m.from_user.userid}}/">{{m.from_user.username}}</a>
 <br>内容:{{m.content}}
 <br>发布时间:{{m.pub_date}}
+<form method="POST"><button name="delete" value="{{m.id}}">删除</button></form>
 </div>
 {%endfor%}
 <div class="pagination">
     <span class="step-links">
         {% if mess.has_previous %}
-            <a href="?page1={{ mess.previous_page_number}}{{url1}}">previous</a>
+            <a href="?page={{ mess.previous_page_number}}">previous</a>
         {% endif %}
 
         <span class="current">
@@ -100,7 +72,7 @@ li{
         </span>
 
         {% if mess.has_next %}
-            <a href="?page1={{ mess.next_page_number }}{{url2}}">next</a>
+            <a href="?page={{ mess.next_page_number }}">next</a>
         {% endif %}
     </span>
 </div>
@@ -108,4 +80,4 @@ li{
 暂无留言
 {%endif%}
 </div>
-{%endblock%}
+{%endblock%}<div>

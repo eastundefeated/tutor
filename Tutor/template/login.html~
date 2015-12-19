@@ -17,7 +17,7 @@
         {% endif %}
 	<form method="post">
 	<ul>
-	
+	{{form.as_ul}}
       <li class="item"><input type="submit" class="subset" id="submit" name="commit" value="登录">
       <input type="reset"  class="subset" id="reset" value="重置"></li>
         </ul>

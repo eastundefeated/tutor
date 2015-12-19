@@ -5,13 +5,14 @@ from models import *
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from forms import *
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
+from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from PIL import Image
 import datetime
 import hashlib
 import math
-university_dict = {}	
+university_dict = {}
 for item in university_choice:
     university_dict[item[0]] = item[1]
 university_choice = (("001","哈尔滨工业大学"), ("002","哈尔滨工程大学"),("003","东北林业大学"),("004","黑龙江大学"),
@@ -36,22 +37,26 @@ def login_required(fn):
             return HttpResponseRedirect('/login/')
     return login_check
 #忘记密码
+@csrf_exempt
 def forgetPassword(request):
     if request.method == "POST":
 	mail = request.POST.get("email")
 	try:
 	    user = User.objects.get(email=mail)
-	except Tutor.DoesNotExist:
+	except User.DoesNotExist:
 	    return HttpResponse("<h1>Invalid email!</h1>")
-	url = "localhost:8000/setpassword/"
-	url += str(user.userid)+"/"+hashlib.md5(str(user.password)).hexdigest()+"/"
-	content = "<html><body>尊敬的%s,请复制该链接或直接点击打开来完成重置密码<a href=%s>%s</a></body></html>"%(user.username,url,url)
-	msg = EmailMessage("重置密码",content,"2770837735@qq.com",[mail])
+	url = "http://localhost:8000/setpassword/"+str(user.userid)+"/"+hashlib.md5(str(user.password)).hexdigest()+"/"
+	content = u"<html><body>尊敬的%s,请复制该链接或直接点击打开来完成重置密码<a href=%s>%s</a></body></html>"%(user.username,url,url)
+	msg = EmailMultiAlternatives("重置密码",content,"2770837735@qq.com",[mail])
+        msg.attach_alternative(content, "text/html")
 	msg.send()
 	return HttpResponse("<h1>验证邮件已发往您的邮箱!</h1>")
+    return render(request,"forgetpassword.html")
 #邮箱验证
 def activeMail(request,userid,password):
+    print "there"
     user = get_object_or_404(User,userid=userid)
+    print "here"
     if hashlib.md5(str(user.password)).hexdigest() == password and not user.is_active:
         user.is_active = True
 	user.save()
@@ -61,6 +66,7 @@ def activeMail(request,userid,password):
     else:
 	return HttpResponseRedirect('/')
 #重置密码
+@csrf_exempt
 def resetPassword(request,userid,password):
     user = get_object_or_404(User,userid=userid)
     if hashlib.md5(str(user.password)).hexdigest() == password:
@@ -68,6 +74,7 @@ def resetPassword(request,userid,password):
 	    form = PasswordReset(request.POST)
 	    if form.is_valid():
 		user.password = request.POST.get('password1')
+		user.save()
 		request.session['userid'] = userid
 		messages.success(request,"密码重置成功")
 		return HttpResponseRedirect('/index/')
@@ -80,13 +87,13 @@ def resetPassword(request,userid,password):
 @csrf_exempt
 @login_required
 def changePassword(request):
-    is_change = True
     user = User.objects.get(userid=request.session['userid'])
     if request.method == "POST":
 	form = PasswordChange(request.POST)
 	if form.is_valid():
-	    if request.POST.get('password_origin')==user.password:
+	    if user.password==form.cleaned_data.get("password_orgin"):
 		user.password = request.POST.get('password1')
+		user.save()
 		messages.success(request,"修改密码成功")
 		return HttpResponseRedirect('/index/')
 	    else:
@@ -112,19 +119,31 @@ def register(request):
             user = form.save(commit=False)
             user.is_active = False
 	    user.has_image = False
-            request.session['userid'] = user.userid
-            messages.success(request,"注册成功")
-            if 'next' in request.session:
-		url = request.session['next']
-	        del request.session['next']
-	    else:
-	        url = '/index/'
-	    return HttpResponseRedirect(url)
+	    user.save()
+            url = "http://localhost:8000/activemail/"+str(user.userid)+"/"+hashlib.md5(user.password).hexdigest()+"/"
+	    content = u"<p>尊敬的%s,请复制该链接或直接点击打开来完成激活<a href=%s>%s</a></p>"%(user.username,url,url)
+	    msg = EmailMultiAlternatives("激活邮件",content,"2770837735@qq.com",[form.cleaned_data.get("email")])
+	    msg.send()
+	    return HttpResponse("<h2>邮件已经发送到您的邮箱</h2>")
     else:
         form = CreateForm()
     return render(request, "register.html", {'form':form})
 def mainpage(request):
-    pass
+    user = False
+    if "userid" in request.session:
+	user = User.objects.get(userid=request.session['userid'])
+    tutors = User.objects.filter(identity=False).order_by("-score")[:5] if User.objects.filter(identity=False).count()>5 else User.objects.filter(identity=False).order_by("-score")
+    exps = Exp.objects.order_by("-pub_date")[:5] if Exp.objects.count()>5 else Exp.objects.order_by("-pub_date")
+    subject_c = {"Math":0,"English":0,"Chinese":0,"Physic":0,"Chemistry":0,"Biology":0}
+    for key in subject_c.keys():
+	subject_c[key] = Employ.objects.filter(subject__subject__in = [key]).count()
+    subject_count = subject_c.items()
+    subject_count.sort(key = lambda x:x[1],reverse=True)
+    date_count = []
+    for i in range(1,8):
+	date_count.append((i,Employ.objects.filter(pub_date__week_day=i).count()))
+    date_count.sort(key = lambda x:x[1],reverse=True)
+    return render(request,"mainpage.html",locals())
 @csrf_exempt
 @redirect_to_index
 def login(request):
@@ -156,10 +175,10 @@ def login(request):
 @login_required
 def logout(request):
     if request.method == "POST":
-	if "yes" in request.POST:	
+	if "yes" in request.POST:
     	    del request.session["userid"]
 	    messages.success(request,"退出成功")
-	    return HttpResponseRedirect("/login/")
+	    return HttpResponseRedirect("/")
 	else:
 	    return HttpResponseRedirect("/index/")
     return render(request,"logout.html")
@@ -169,10 +188,10 @@ def logout(request):
 @login_required
 def index(request):
     global university_dict
-    changeFormState()	
+    changeFormState()
     user = User.objects.get(userid=request.session['userid'])
     identity = user.identity
-    hirecount = user.hire_to.filter(is_read=False).count()
+    hirecount = user.hire_to.count()
     commentcount = user.receivecomment.filter(is_read=False).count()
     messagecount = user.receivemessage.filter(is_read=False).count()
     if identity:
@@ -188,7 +207,7 @@ def index(request):
 	    tutorset = tutorset.order_by("-score").distinct()
 	else:
 	    tutorset = User.objects.filter(identity=False,state='F').order_by("-score").distinct()
-	tutorset = tutorset[:5] if tutorset.count()>5 else tutorset	
+	tutorset = tutorset[:5] if tutorset.count()>5 else tutorset
     else:
 	if user.askemploy_set.exists():
 	    employ = user.askemploy_set.latest("pub_date")
@@ -234,7 +253,7 @@ def myinfo(request):
 @login_required
 def uploadimage(request):
     user = User.objects.get(userid = request.session["userid"])
-    if request.method == 'POST':       
+    if request.method == 'POST':
         if 'image' in request.FILES:
             image=request.FILES["image"]
             img=Image.open(image)
@@ -246,73 +265,63 @@ def uploadimage(request):
 	    user.save()
             return HttpResponseRedirect("/index/")
     return render(request,'image.html')
-
 #家长搜索家教，以及家教发布的表单
 #家教搜索家长发布的表单
 @csrf_exempt
 @login_required
 def search(request):
-    userid = request.session["userid"]
-    identity = request.session['identity']
-    if identity == "p":
-	user = Parent.objects.get(userid=userid)
-	tutorset = Tutor.objects.order_by('-score')	
-	if request.method == "POST":
-	    grade=request.POST.get('grade')
-	    subjectlist = request.POST.getlist('subject')
-	    if grade!='N' and subjectlist:	    
-		tutorset = tutorset.filter(subject__grade=grade,subject__subject__in=subjectlist)		
-	    elif grade!='N':
-		tutorset = tutorset.filter(subject__grade=grade)
-	    elif subjectlist:
-		tutorset = tutorset.filter(subject__subject__in=subjectlist)
+    user = User.objects.get(userid=request.session['userid'])
+    identity = user.identity
+    form = searchAskEmployForm() if user.identity else searchEmployForm()
+    forms = AskEmploy.objects.filter(is_visible=True).order_by("-pub_date") if user.identity else Employ.objects.filter(is_visible=True).order_by("-pub_date")       
+    url = "" 
+    if request.method == "GET":
+        for key,value in request.GET.items():
+	    if key!="page":
+	        url+="&"+key+"="+value
+	if "pub_date" in request.GET and request.GET.get('pub_date') != "all":
+	    forms = forms.filter(pub_date__gte=datetime.datetime.now()-datetime.timedelta(days=1)) if request.POST.get('pub_date') == "day" else forms.filter(pub_date__gte=datetime.datetime.now()-datetime.timedelta(days=7))
+	if "gender" in request.GET and not user.identity and request.GET.get('gender')!='N':
+	    forms = forms.filter(Q(gender2=request.GET.get('gender'))|Q(gender2='N'))
+       	forms = forms.filter(subject__subject__in=request.GET.getlist('subject')) if 'subject' in request.GET and request.GET.getlist('subject') else forms
+	forms = forms.filter(subject__grade=request.GET.get('grade')) if "grade" in request.GET and request.GET.get('grade')!='N' else forms
+	if 'salary' in request.GET and request.GET.get('salary') != 'N':
+	    if request.GET.get('salary') == '0':
+		forms = forms.filter(salary__lte=50.0)
 	    else:
-		pass
-	    if 'content' in request.POST:
-	        content = request.POST.get('content')
-		tutorset = tutorset.filter(username__contains=content)
-	    if request.POST.get('gender')!='N':
-		tutorset = tutorset.filter(gender=request.POST.get('gender'))
-	    print tutorset
-	dict_subject = []
-	for tutor in tutorset.distinct():
-	    if tutor.subject.count()>2:
-	 	dict_subject.append((tutor,tutor.subject.all()[:2]))
-	    else:
-		dict_subject.append((tutor,tutor.subject.all())) 		
-        return render(request,'psearch.html',locals())
-    else:
-	user = Tutor.objects.get(userid=userid)
-	forms = Employ.objects.all()
-	if request.method == "POST":
-	    tutorgender = request.POST.get('tutorgender')
-	    grade = request.POST.get('grade')
-	    subject_list = request.POST.getlist('subject')
-	    forms = forms.filter(Q(gender2=tutorgender)|Q(gender2="N")) if tutorgender != "N" else forms
-	    forms = forms.filter(subject__grade=grade) if grade != "N" else forms
-	    forms = forms.filter(subject__subject__in=subject_list) if subject_list else forms	
-	dict_subject = []
-    	for fm in forms:
-	    dict_subject.append((fm,(fm.subject.all()[:5] if fm.subject.count()>5 else fm.subject.all())))	
-	return render(request,'tsearch.html',locals())
+		if request.GET.get('salary') == '1':
+		    forms = forms.filter(salary__gt=50.0,salary__lte=100.0)
+	        else:
+		    forms = forms.filter(salary__gt=100.0)	
+    paginator = Paginator(forms, 6) # Show 25 contacts per page
+    page = request.GET.get('page','1')
+    try:
+        forms = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        forms = paginator.page(1)
+    except EmptyPage:
+        forms = paginator.page(paginator.num_pages)
+    return render(request,'search.html',locals())
 @csrf_exempt
 @login_required
 def searchTutor(request):
     global university_dict
     user = User.objects.get(userid=request.session['userid'])
+    tutorset = User.objects.filter(identity=False).order_by("-score")
+    form = searchTutorForm()
+    url = "" 
     if not user.identity:
 	return HttpResponseRedirect("/index/")
-    if request.method == "POST":
-	tutorset = User.objects.filter(identity=False).all()	
-	form = searchTutorForm(request.POST)
-	fm = request.POST
-        tutorset = tutorset.filter(username__icontains=fm['username']) if fm['username'] else tutorset
-	tutorset = tutorset.filter(gender=fm['gender']) if fm['gender']!='N' else tutorset
-	tutorset = tutorset.filter(subject__grade=fm['grade']) if fm['grade']!='N' else tutorset
-	tutorset = tutorset.filter(subject__subject__in=fm['subject']) if fm['subject'] else tutorset
-    else:
-	tutorset = User.objects.filter(identity=False).order_by("-score")
-	form = searchTutorForm() 
+    if request.method == "GET":
+	for key,value in request.GET.items():
+	    if key!="page":
+	        url+="&"+key+"="+value
+	fm = request.GET
+        tutorset = tutorset.filter(username__icontains=request.GET.get('username')) if 'username' in request.GET and request.GET.get('username') else tutorset
+	tutorset = tutorset.filter(gender=request.GET.get('gender')) if 'gender' in request.GET and request.GET['gender'] and request.GET['gender']!='N' else tutorset
+	tutorset = tutorset.filter(subject__grade=request.GET['grade']) if 'grade' in request.GET and request.GET['grade'] and request.GET['grade']!='N' else tutorset
+	tutorset = tutorset.filter(subject__subject__in=request.GET.getlist('subject')) if 'subject' in request.GET and request.GET.getlist('subject') else tutorset
     paginator = Paginator(tutorset, 6) # Show 25 contacts per page
     page = request.GET.get('page','1')
     try:
@@ -329,100 +338,103 @@ def publishform(request):
     global university_dict
     user = User.objects.get(userid=request.session['userid'])
     if request.method == "POST":
-	form = EmployForm(request.POST) if user.identity else AskEmployForm(request.POST)
-	if form.is_valid():
-	    fm = form.save()
-	    if user.identity:
-		fm.parent = user
-	    else:
-		fm.tutor = user
-	    fm.save()
-	    messages.success(request,"表单发布成功")
-	    return HttpResponseRedirect("/index/")
+	if "delete" in request.POST:
+	    form = EmployForm() if user.identity else AskEmployForm()
+	    classname = Employ if user.identity else AskEmploy
+	    try:
+		classname.objects.get(id=request.POST.get('delete')).delete()        
+		messages.success(request,"删除成功")
+	    except classname.DoesNotExist:
+		pass
+	else:   
+	    form = EmployForm(request.POST) if user.identity else AskEmployForm(request.POST)
+	    if form.is_valid():
+	        fm = form.save()
+	        fm.user = user
+	        fm.save()
+	        messages.success(request,"表单发布成功")
     else:
 	form = EmployForm() if user.identity else AskEmployForm()
+    forms = Employ.objects.order_by("-is_visible").order_by("-pub_date").distinct() if user.identity else AskEmploy.objects.order_by("-is_visible").order_by("-pub_date").distinct()
+    paginator = Paginator(forms, 6) # Show 25 contacts per page
+    page = request.GET.get('page','1')
+    try:
+        forms = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        forms = paginator.page(1)
+    except EmptyPage:
+        forms = paginator.page(paginator.num_pages)
     return render(request,"publishform.html",locals())
 @csrf_exempt
 @login_required
 def message(request):
-    university_dict = {}
-    for item in university_choice:
-        university_dict[item[0]] = item[1]
-    userid = request.session['userid']
-    identity = request.session['identity']
-    if identity == "p":
-	user = Parent.objects.get(userid=userid)
-	tpmessage = user.receivemessage.all()
-        tpcomment = user.receivecomment.all()
-	if Tutor.objects.count()>10:
-    	    tutors = Tutor.objects.all()[:10]
-        else:
-	    tutors = Tutor.objects.all()
-	if request.method == 'POST':
-	    if "delete" in request.POST:
-		try:
-		    TPMessage.objects.get(ID=request.POST.get("delete")).delete()
-		    messages.success(request,"删除成功")
-		except TPMessage.DoesNotExist:
-		    pass
-	if user.employ_set.count()>4:
-            forms = user.employ_set.all()[:4]
-        else:
-	    forms = user.employ_set.all()
-        dict_subject = []
-        for fm in forms:
-	    if fm.subject.count()>2:
-	        dict_subject.append((fm,fm.subject.all()[:2]))
-            else:
-	        dict_subject.append((fm,fm.subject.all()))	
-	return render(request,"pmessage.html",locals())
-    else:
-	user = Tutor.objects.get(userid=userid)
-	tpmessage = user.receivemessage.all()
-        tpcomment = user.receivecomment.all()
-	if Tutor.objects.count()>10:
-    	    tutors = Tutor.objects.all()[:10]
-        else:
-	    tutors = Tutor.objects.all()
-	if request.method == 'POST':
-	    if "delete" in request.POST:
-		try:
-		    PTMessage.objects.get(ID=request.POST.get("delete")).delete()
-	            messages.success(request,"删除成功")
-  		except PTMessage.DoesNotExist:
-		    pass
-	if Employ.objects.count()>4:
-            forms = Employ.objects.all()[:4]
-        else:
-	    forms = Employ.objects.all()
-        dict_subject = []
-        for fm in forms:
-	    if fm.subject.count()>2:
-	        dict_subject.append((fm,fm.subject.all()[:2]))
-            else:
-	        dict_subject.append((fm,fm.subject.all()))	
-	return render(request,"tmessage.html",locals())
-@login_required
-def showdetail(request,id):
-    if request.session['identity'] == 'p':
-	return HttpResponseRedirect('/index/')
-    else:
-	user = Tutor.objects.get(userid=request.session['userid'])
-	employ = get_object_or_404(Employ,id=id)
-	import datetime
-	subject_list = employ.subject.all()
-	validtime = employ.pub_date + datetime.timedelta(days=employ.valid_days)
-	return render_to_response("employ.html",locals())
-	
+    user = User.objects.get(userid = request.session['userid'])
+    if request.method == "POST" and "delete" in request.POST:
+	try:
+	    Message.objects.get(id=request.POST.get('delete'))
+	    messages.success(request,"删除成功")
+	except Message.DoesNotExist:
+	    pass
+    for m in Message.objects.filter(to_user=user,is_read=False).distinct():
+	m.is_read = True
+	m.save()
+    mess = Message.objects.filter(to_user=user).order_by("-is_read").order_by("-pub_date")
+    paginator = Paginator(mess, 6) 
+    page = request.GET.get('page','1')
+    try:
+        mess = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        mess = paginator.page(1)
+    except EmptyPage:
+        mess = paginator.page(paginator.num_pages)
+    return render(request,"message.html",locals())    
+
 @csrf_exempt
 @login_required
-def share(request):   
+def comment(request):
+    user = User.objects.get(userid = request.session['userid'])
+    for m in Comment.objects.filter(to_user=user,is_read=False).distinct():
+	m.is_read = True
+	m.save()
+    mess = Comment.objects.filter(to_user=user).order_by("-is_read").order_by("-pub_date")
+    paginator = Paginator(mess, 6) 
+    page = request.GET.get('page','1')
+    try:
+        mess = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        mess = paginator.page(1)
+    except EmptyPage:
+        mess = paginator.page(paginator.num_pages)
+    return render(request,"comment.html",locals())    
+
+def exp(request):
+    user = False if not "userid" in request.session else User.objects.get(userid=request.session['userid'])
+    mess = Exp.objects.order_by("-pub_date")
+    paginator = Paginator(mess, 10) 
+    page = request.GET.get('page','1')
+    try:
+        mess = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        mess = paginator.page(1)
+    except EmptyPage:
+        mess = paginator.page(paginator.num_pages)
+    return render_to_response("exp.html",locals())
+
+@csrf_exempt
+@login_required
+def share(request):
     user = User.objects.get(userid=request.session['userid'])
     if request.method == "POST":
 	if "delete" in request.POST:
-	    Exp.objects.get(id=request.POST.get('delete')).delete()
-	    messages.success(request,"删除成功")
-	    return HttpResponseRedirect("/index/")
+	    try:
+	        Exp.objects.get(id=request.POST.get('delete')).delete()
+	        messages.success(request,"删除成功")
+	    except Exp.DoesNotExist:
+		pass
 	elif "save" in request.POST:
     	    form = ExpForm(request.POST)
 	    if form.is_valid():
@@ -430,60 +442,171 @@ def share(request):
 	        exp.user = user
  	        exp.save()
 	        messages.success(request,"发表成功!")
-	        return HttpResponseRedirect("/index/")
     else:
 	form = ExpForm()
-    forms = user.exp_set.all()
+    forms = Exp.objects.filter(user=user).order_by('-pub_date').distinct()
+    paginator = Paginator(forms, 6) # Show 25 contacts per page
+    page = request.GET.get('page','1')
+    try:
+        forms = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        forms = paginator.page(1)
+    except EmptyPage:
+        forms = paginator.page(paginator.num_pages)
     return render_to_response("share.html",locals())
 @csrf_exempt
-@login_required
-def pinformation(request,userid):
-    if request.session['identity'] == "p":
-	return HttpResponseRedirect('/index/')
-    else:
-	user = Tutor.objects.get(userid=request.session['userid'])
-        parent = get_object_or_404(Parent,userid=userid)	
-	if request.method == "POST":
-	    if "ccommit" in request.POST:
-		TPComment.objects.create(from_user=user,to_user=parent,content=request.POST.get("content"))
-		messages.success(request,"评论成功") 	
-		return HttpResponseRedirect('/index/')
-	    elif "mcommit" in request.POST:
-		TPMessage.objects.create(from_user=user,to_user=parent,content=request.POST.get("content"))
-		messages.success(request,"留言成功") 	
-		return HttpResponseRedirect('/index/')
+def information(request,userid):
+    global university_dict
+    u = get_object_or_404(User,userid=userid)
+    can_hire = False
+    can_comment = False
+    if "userid" in request.session:
+	user = User.objects.get(userid=request.session['userid'])
+        if user == u:
+	    return HttpResponseRedirect("/index/")
+	if not (u.identity and user.identity):
+	    if user.identity and EmployRelationship.objects.filter(parent=user,tutor=u,is_valid=False,has_comment=False).exists():
+		can_comment = True
+	    elif (not user.identity) and EmployRelationship.objects.filter(parent=u,tutor=user,is_valid=False,has_comment=False).exists():
+		can_comment = True
             else:
 		pass
-	comment_list = parent.receivecomment.all()
-        message_list = parent.receivemessage.all() 
-        return render(request,"pinformation.html",locals()) 
-@csrf_exempt
-@login_required
-def tinformation(request,userid):
-    if request.session['identity'] == "t":
-	return HttpResponseRedirect('/index/')
-    else:
-	user = Parent.objects.get(userid=request.session['userid'])
-        tutor = get_object_or_404(Tutor,userid=userid)
-	university_dict = {}
-	for item in university_choice:
-	    university_dict[item[0]] = item[1]
-	subject_list = tutor.subject.all()
-	if request.method == "POST":
-	    if "ccommit" in request.POST:
-		PTComment.objects.create(from_user=user,to_user=tutor,content=request.POST.get("content"))
-		messages.success(request,"评论成功") 	
-		return HttpResponseRedirect('/index/')
-	    elif "mcommit" in request.POST:
-		PTMessage.objects.create(from_user=user,to_user=tutor,content=request.POST.get("content"))
-		messages.success(request,"留言成功") 	
-		return HttpResponseRedirect('/index/')
-            else:
+	    can_hire = True
+	    if user.identity and EmployRelationship.objects.filter(parent=user,tutor=u,is_valid=True).exists():
+		can_hire = False
+	    elif (not user.identity) and EmployRelationship.objects.filter(parent=u,tutor=user,is_valid=True).exists():
+	        can_hire = False
+	    else:
 		pass
-	comment_list = tutor.receivecomment.all()
-        message_list = tutor.receivemessage.all() 
-        return render(request,"tinformation.html",locals()) 	
+	if request.method == "POST":
+	    if "mess" in request.POST:
+		Message.objects.create(content=request.POST.get("message"),is_read=False,from_user=user,to_user=u,pub_date=datetime.datetime.now())
+		messages.success(request,"留言成功")
+	    elif "hire" in request.POST:
+		Hire.objects.create(is_read=False,from_user=user,to_user=u,pub_date=datetime.datetime.now())
+		messages.success(request,"请求发送成功")
+	    elif "comment" in request.POST and can_comment:
+		form = CommentParentForm(request.POST) if user.identity else CommentParentForm(request.POST)
+		fm = Comment()
+		fm.content = request.POST.get("content")
+		fm.from_user = user
+		fm.is_read = False
+		fm.to_user = u
+                fm.score = request.POST.get("score") if user.identity else 0
+		fm.pub_date = datetime.datetime.now()
+		fm.save()
+                if user.identity:
+		    u.count_comment+=1
+                    u.total_score+=int(request.POST.get("score"))
+		    u.score = u.total_score*1.0/u.count_comment
+		    u.save() 
+		messages.success(request,"评论成功")
+		e = EmployRelationship.objects.filter(parent=user,tutor=u,is_valid=False,has_comment=False)[0] if user.identity else EmployRelationship.objects.filter(parent=u,tutor=user,is_valid=False,has_comment=False)[0]
+		e.has_comment = True
+		e.save()
+	else:
+	    form = CommentTutorForm() if user.identity else CommentParentForm()
+    else:
+	user = False
+    mess = Message.objects.filter(to_user=u).order_by("-pub_date")
+    paginator = Paginator(mess, 6) 
+    page = request.GET.get('page','1')
+    try:
+        mess = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        mess = paginator.page(1)
+    except EmptyPage:
+        mess = paginator.page(paginator.num_pages)
+    comments = Comment.objects.filter(to_user=u).order_by("-pub_date")
+    paginator1 = Paginator(comments, 6) 
+    page1 = request.GET.get('page1','1')
+    try:
+        comments = paginator1.page(page1)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        comments = paginator1.page(1)
+    except EmptyPage:
+        comments = paginator1.page(paginator1.num_pages)
+    return render(request,"information.html",locals())
 @csrf_exempt
 @login_required
-def comment(request):
-    pass
+def hire(request):
+    user = User.objects.get(userid=request.session['userid'])
+    hires = Hire.objects.filter(to_user=user).order_by("-pub_date")  
+    if request.method == "POST":
+	if 'ignore' in request.POST:
+	    try:	    
+		Hire.objects.get(id=request.POST.get("ignore")).delete()
+                messages.success(request,"删除成功")
+	    except Hire.DoesNotExist:
+		pass
+        elif "agree" in request.POST:
+	    try:
+		ask = Hire.objects.get(id=request.POST.get("agree"))
+		if user.identity:
+		    try:
+			e = EmployRelationship.objects.get(parent=user,tutor=ask.from_user,is_valid=True)
+			messages.info(request,"你们的雇佣关系已存在")
+                    except EmployRelationship.DoesNotExist:
+		       messages.success(request,"雇佣成功")
+		       EmployRelationship.objects.create(parent=user,tutor=ask.from_user,is_valid=True,pub_date=datetime.datetime.now(),has_comment=False)
+		else:
+		    try:
+                        e =EmployRelationship.objects.get(tutor=user,parent=ask.from_user,is_valid=True)
+			messages.info(request,"你们的雇佣关系已存在")
+                    except EmployRelationship.DoesNotExist:
+                       messages.success(request,"雇佣成功")
+		       EmployRelationship.objects.create(tutor=user,parent=ask.from_user,is_valid=True,pub_date=datetime.datetime.now(),has_comment=False)
+		Hire.objects.get(id=request.POST.get("agree")).delete()		
+	    except Hire.DoesNotExist:
+		pass
+        elif "deletehistory" in request.POST:
+	    try:
+		EmployRelationship.objects.get(id=request.POST.get("deletehistory")).delete()
+	        messages.success(request,"删除成功")
+            except EmployRelationship.DoesNotExist:
+		pass
+	elif "disable" in request.POST:
+	    try:
+		e = EmployRelationship.objects.get(id=request.POST.get("disable"))
+		e.is_valid = False	        
+		e.save()
+		messages.success(request,"解除关系成功")
+            except EmployRelationship.DoesNotExist:
+		pass
+	else:
+	    pass
+    paginator = Paginator(hires, 6) 
+    page = request.GET.get('page','1')
+    try:
+        hires = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        hires = paginator.page(1)
+    except EmptyPage:
+        hires = paginator.page(paginator.num_pages) 
+    mess = EmployRelationship.objects.filter(parent=user).order_by("-is_valid").order_by("-pub_date") if user.identity else EmployRelationship.objects.filter(tutor=user).order_by("-is_valid").order_by("-pub_date")
+    paginator1 = Paginator(mess, 6) 
+    page1 = request.GET.get('page1','1')
+    try:
+        mess = paginator1.page(page1)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        mess = paginator1.page(1)
+    except EmptyPage:
+        mess = paginator1.page(paginator1.num_pages)
+    return render(request,"hire.html",locals())
+@csrf_exempt
+@login_required
+def showemploy(request,id):
+    user = User.objects.get(userid=request.session['userid'])
+    employ = get_object_or_404(Employ,id=id)
+    return render(request,"employ.html",locals())
+@csrf_exempt
+@login_required    
+def showaskemploy(request,id):
+    user = User.objects.get(userid=request.session['userid'])
+    employ = get_object_or_404(AskEmploy,id=id)
+    return render(request,"askemploy.html",locals())

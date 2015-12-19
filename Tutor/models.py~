@@ -61,6 +61,7 @@ class EmployRelationship(models.Model):
     tutor = models.ForeignKey(User,related_name="employee")
     pub_date = models.DateTimeField(auto_now_add=True)
     is_valid = models.BooleanField(default=True)
+    has_comment = models.BooleanField(default=False)
     class Meta:
 	ordering = ['-pub_date']
     def __unicode__(self):
@@ -68,7 +69,7 @@ class EmployRelationship(models.Model):
 
 
 class Employ(models.Model):
-    parent = models.ForeignKey(User,blank=True,null=True)
+    user = models.ForeignKey(User,blank=True,null=True)
     #子女信息
     is_visible = models.BooleanField(default=True)
     age = models.CharField(verbose_name="子女年龄", max_length = 2,choices=age_choice,default="3")
@@ -88,10 +89,10 @@ class Employ(models.Model):
     class Meta:
         ordering = ['-pub_date',"salary"]
     def __unicode__(self):
-        return self.parent.username+str(self.pub_date)
+        return self.user.username+str(self.pub_date)
 #家教发布求职表单
 class AskEmploy(models.Model):
-    tutor = models.ForeignKey(User,blank=True,null=True)
+    user = models.ForeignKey(User,blank=True,null=True)
     is_visible = models.BooleanField(default=True)
     from_time = models.DateField(verbose_name="起始时间")
     to_time = models.DateField(verbose_name="结束时间")
@@ -103,7 +104,7 @@ class AskEmploy(models.Model):
     class Meta:
 	ordering= ['-pub_date']
     def __unicode__(self):
-	return self.tutor.username + str(self.pub_date)
+	return self.user.username + str(self.pub_date)
 
 #家教经历分享
 class Exp(models.Model):

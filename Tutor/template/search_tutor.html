@@ -1,6 +1,6 @@
 {%extends "base.html"%}
 {%block left%}
-<form method="POST">
+<form method="GET">
 <ul>
 {{form.as_ul}}
 <li><input type="submit" value="搜索"/></li>
@@ -21,7 +21,7 @@
 <div class="pagination">
     <span class="step-links">
         {% if tutors.has_previous %}
-            <a href="?page={{ contacts.previous_page_number }}">previous</a>
+            <a href="?page={{ tutors.previous_page_number }}">previous</a>
         {% endif %}
 
         <span class="current">

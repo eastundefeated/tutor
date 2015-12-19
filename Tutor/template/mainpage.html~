@@ -1,0 +1,45 @@
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>首页</title>
+</head>
+<body>
+{%if user%}欢迎您!<a href="/index/">{{user.username}}</a>{%else%}<a href="/login/">登录</a><a href="/register/">注册</a>{%endif%}
+<div><a href="/exp/"><center><h3>经历分享</h3></center></a>
+{%if exps %}
+{%for exp in exps%}
+<div>
+<a href="/exp/{{exp.id}}/">{{exp.title}}</a>
+{{exp.content|truncatewords:"30"}}
+</div>
+{%endfor%}
+{%endif%}
+</div>
+<div><center><h3>家教排行</h3></center>
+{%if tutors%}
+<ol>
+{%for tutor in tutors%}
+<li>评分:{{tutor.score}}&nbsp;<a href="/information/{{tutor.userid}}/">{{tutor.username}}</a></li>
+{%endfor%}
+</ol>
+{%endif%}
+</div>
+<div><center><h3>课程排行</h3></center>
+{%if subject_count%}
+<ol>
+{%for subject,count in subject_count%}
+<li>课程：{{subject}}&nbsp;发布次数:{{count}}</li>
+{%endfor%}
+</ol>
+{%endif%}
+</div>
+<div><center><h3>成交日期排行(weekday)</h3></center>
+{%if date_count%}
+<ol>
+{%for d,count in date_count%}
+<li>周{{d}}&nbsp;发布次数:{{count}}</li>
+{%endfor%}
+</ol>
+{%endif%}
+</div>
+</body>

@@ -50,6 +50,21 @@
 </div>
 {%endfor%}
 </form>
+<div class="pagination">
+    <span class="step-links">
+        {% if forms.has_previous %}
+            <a href="?page={{ forms.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ forms.number }} of {{ forms.paginator.num_pages }}.
+        </span>
+
+        {% if forms.has_next %}
+            <a href="?page={{ forms.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
 {%else%}
 暂无经历分享
 {%endif%}

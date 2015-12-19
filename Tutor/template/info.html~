@@ -59,7 +59,6 @@
 <table id="nameinfo">
 <tr>
 <td id="info_td">
-<a href="/changepassword/">修改密码</a>
 <ul id="userinfo">
 <li class="li_info">姓名:&nbsp;&nbsp;{{form.realname}}</li>
 <li class="li_info">性别:&nbsp;&nbsp;{%ifequal user.gender 'M' %}男{%else%}女{%endifequal%}</li>

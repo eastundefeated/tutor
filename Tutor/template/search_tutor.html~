@@ -18,6 +18,21 @@
 <br>擅长科目:{%for subject in tutor.subject.all%}{{subject}}&nbsp;{%endfor%}
 </div>
 {%endfor%}
+<div class="pagination">
+    <span class="step-links">
+        {% if tutors.has_previous %}
+            <a href="?page={{ tutors.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ tutors.number }} of {{ tutors.paginator.num_pages }}.
+        </span>
+
+        {% if tutors.has_next %}
+            <a href="?page={{ tutors.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
 {%else%}
 暂无家教
 {%endif%}

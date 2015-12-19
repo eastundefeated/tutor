@@ -3,6 +3,8 @@
 <meta charset="utf-8"/>
 {% load staticfiles %}
 <title>{%block title%}个人主页{%endblock%}</title>
+{%block extra%}
+{%endblock%}
 <style type="text/css">
 #page{
  margin:0 auto;
@@ -32,17 +34,17 @@ div{
  margin-top:55px;
  list-style:none;
  font-size:25px;
- line-height:100%;
+ line-height:80%;
  text-align:center
  font-family:"Arial","Microsoft YaHei","黑体","宋体",sans-serif;
- margin-right:30px;
 }#photo{
  margin-right:10px;
- margin-left:250px;
+ margin-left:20px;
  margin-top:20px;
  width:50px;
  height:50px;
  border-radius:50px;
+ 
 }
 #logout{
  margin-top:2.5%;
@@ -79,7 +81,10 @@ a.titleline:hover{
 }li.success{color:green;font-size:15px;}
 li.warning{color:yellow;font-size:15px;}
 li.error{color:red;font-size:15px;}
-textarea{outline:none;resize:none;} 
+textarea{outline:none;resize:none;}
+li{
+  list-style-type:none;
+} 
 {%block style%}
  {%endblock%}
 </style>
@@ -90,19 +95,25 @@ textarea{outline:none;resize:none;}
 <body id="page">
 <div id="header">
 <ul>
-<li class="titleline"><a class="titleline" href="/index">我的主页</a></li>
+<li class="titleline"><a class="titleline" href="/index">个人主页</a></li>
 {%if user.identity%}
-<li class="titleline"><a class="titleline" href="/search_tutor">家教搜索</a></li>
-{%endif%}
+<li class="titleline"><a class="titleline" href="/search_tutor">家教搜索</a></li>{%endif%}
 <li class="titleline"><a class="titleline" href="/publishform/">表单发布</a></li>
 <li class="titleline"><a class="titleline" href="/search/">表单搜索</a></li>
 <li class="titleline"><a class="titleline" href="/share/">经历分享</a></li>
 <li class="titleline"><a class="titleline" href="/message/">留言板</a></li>
+<li class="titleline"><a class="titleline" href="/comment/">评论</a></li>
+<li class="titleline"><a class="titleline" href="/hire/">雇佣请求</a></li>
 </ul>
-<a href="/index/"><img id="photo" src="/static/image/{%if user.has_image%}{{user.userid}}{%else%}
- {%ifequal user.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png"  alt="用户图像" /></a>
+{%if user%}
 欢迎您！<strong style="color:green;">{{user.username}}</strong>
 <a href="/logout/"><button id="logout" name="logout">退出</button></a>
+<a href="/index/"><img id="photo" src="/static/image/{%if user.has_image%}{{user.userid}}{%else%}
+{%ifequal user.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png"  alt="用户图像" /></a>
+{%else%}
+<a href="/login/"><button id="logout" name="logout">登录</button></a>
+<a href="/register/"><button id="logout" name="logout">注册</button></a>
+{%endif%}
 </div>
 <div id="container">
 {% if messages %}

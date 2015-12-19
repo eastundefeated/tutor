@@ -1,0 +1,66 @@
+{%extends "base.html"%}
+{%block center%}
+<div>
+{%if hires%}
+{%for hire in hires%}
+<div>发布时间:{{hire.pub_date}}<br>
+来自于:<a href="/information/{{hire.from_user.userid}}/">{{hire.from_user.username}}</a>
+<form method="POST">
+<button name="agree" value="{{hire.id}}">同意</button>
+<button name="ignore" value="{{hire.id}}">忽略</button>
+</form>
+</div>
+{%endfor%}
+<div class="pagination">
+    <span class="step-links">
+        {% if hires.has_previous %}
+            <a href="?page={{ hires.previous_page_number}}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ hires.number }} of {{ hires.paginator.num_pages }}.
+        </span>
+
+        {% if hires.has_next %}
+            <a href="?page={{ hires.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+{%else%}
+暂无雇佣请求
+{%endif%}
+</div>
+<div>
+<h2><center>我的雇佣关系</center></h2>
+{%if mess%}
+{%for m in mess%}
+<div>
+与谁:<a href="/information/{%if user.identity%}{{m.tutor.userid}}/">{{m.tutor.username}}</a>
+ {%else%}{{m.parent.userid}}/">{{m.parent.username}}</a>{%endif%}
+<br>发布时间:{{m.pub_date}}
+<br>是否过期:{%if m.is_valid %}有效{%else%}过期{%endif%}
+{%if user.identity%}<br>是否评论过:{%if m.has_comment%}已评论过{%else%}{%if m.is_valid%}未评论{%else%}<a href="/information/{%if user.identity%}{{m.tutor.userid}}/">去评论</a>{%endif%}
+ {%else%}{{m.parent.userid}}/">去评论</a>{%endif%}{%endif%}{%endif%}
+<form method="POST">{%if m.is_valid%}<button name="disable" value="{{m.id}}">解除关系</button>{%else%}<button name="deletehistory" value="{{m.id}}">删除</button>{%endif%}</form>
+</div>
+{%endfor%}
+<div class="pagination">
+    <span class="step-links">
+        {% if mess.has_previous %}
+            <a href="?page1={{ mess.previous_page_number}}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ mess.number }} of {{ mess.paginator.num_pages }}.
+        </span>
+
+        {% if mess.has_next %}
+            <a href="?page1={{ mess.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+{%else%}
+暂无雇用记录
+{%endif%}
+</div>
+{%endblock%}

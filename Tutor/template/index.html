@@ -81,7 +81,7 @@ div.message,div.comment{
 {%endblock%}
 {%block left%}
 <img id="userphoto" src="/static/image/{%if user.has_image%}{{user.userid}}{%else%}
- {%ifequal user.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png" alt="用户头像"/> 
+{%ifequal user.gender 'M'%}man{%else%}woman{%endifequal%}{%endif%}.png" alt="用户头像"/> 
 <h2 id="username"><strong style="color:green;">{{user.username}}</strong>的个人信息</h2>
 <ul>
 <li class="info">姓名:{{user.realname}} </li>
@@ -98,14 +98,14 @@ div.message,div.comment{
 {%for form,subject_list in dict_subject%}
 <div class="recommandform">
 {%if identity%}
-发布者:<a href="/information/{{form.tutor.userid}}/">{{form.tutor.username}}</a><br>
+发布者:<a href="/information/{{form.user.userid}}/">{{form.user.username}}</a><br>
 擅长科目:{%if subject_list%}{%for subject in subject_list %}{{subject}}&nbsp;{%endfor%}{%else%}暂无科目{%endif%}
 <br>额外要求:{{form.info|truncatewords:"30"}}
 <br>薪水要求:{{form.salary}}
 <br>空余时间:{{form.from_time}}&nbsp;&nbsp;{{form.to_time}}<br>
 <a href="/askemploy/{{form.id}}/">点此查看详细信息</a>
 {%else%}
-发布者:<a href="/information/{{form.parent.userid}}/">{{form.parent.username}}</a><br>
+发布者:<a href="/information/{{form.user.userid}}/">{{form.user.username}}</a><br>
 擅长科目:{%if subject_list%}{%for subject in subject_list %}{{subject}}&nbsp;{%endfor%}{%else%}暂无科目{%endif%}
 <br>家教要求:{{form.info2|truncatewords:"30"}}
 <br>薪水期望:{{form.salary}}

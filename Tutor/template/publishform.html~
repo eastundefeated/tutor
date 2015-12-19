@@ -57,6 +57,37 @@ li{
 <input id="submit" class="subset" name="save" type="submit" value="保存" />
 </form>
 </div>
+<div><h3>已发布的表单</h3>
+{%if forms%}
+{%for fm in forms%}
+<div id="{{fm.id}}" class="tutor">
+发布者:<a href="/information/{{fm.user.userid}}/">{{fm.user.username}}</a>
+<br>发布时间:{{fm.pub_date}}
+<br>薪水期望:{%if fm.salary%}{{fm.salary}}{%else%}未填{%endif%}<br>
+擅长科目:{%if fm.subject.all%}{%for subject in fm.subject.all%}{{subject}}&nbsp;{%endfor%}{%endif%}
+<br>是否过期:{%if fm.is_visible%}有效{%else%}过期{%endif%}
+<form method="POST"><button name="delete" value="{{fm.id}}">删除</button><form>
+</div>
+{%endfor%}
+{%else%}
+暂无表单发布
+{%endif%}
+</div>
+<div class="pagination">
+    <span class="step-links">
+        {% if forms.has_previous %}
+            <a href="?page={{ forms.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ forms.number }} of {{ forms.paginator.num_pages }}.
+        </span>
+
+        {% if tutors.has_next %}
+            <a href="?page={{ forms.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
 <script type="text/javascript">
 $("#id_from_time").click(WdatePicker);
 $("#id_to_time").click(WdatePicker);
