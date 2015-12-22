@@ -11,7 +11,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from PIL import Image
 import datetime
 import hashlib
-import math
 university_dict = {}
 for item in university_choice:
     university_dict[item[0]] = item[1]

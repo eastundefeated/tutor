@@ -12,6 +12,8 @@ from PIL import Image
 import datetime
 import hashlib
 import math
+import logging
+logger = logging.getLogger(__name__)
 university_dict = {}
 for item in university_choice:
     university_dict[item[0]] = item[1]
@@ -97,6 +99,7 @@ def changePassword(request):
 		messages.success(request,"修改密码成功")
 		return HttpResponseRedirect('/index/')
 	    else:
+		logger.error('Something went wrong!')
 		messages.error(request,"原始密码错误")
     else:
 	form = PasswordChange()
@@ -178,7 +181,7 @@ def logout(request):
 	if "yes" in request.POST:
     	    del request.session["userid"]
 	    messages.success(request,"退出成功")
-	    return HttpResponseRedirect("/login/")
+	    return HttpResponseRedirect("/")
 	else:
 	    return HttpResponseRedirect("/index/")
     return render(request,"logout.html")
